@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Poppins, JetBrains_Mono } from "next/font/google";
 
 import Providers from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-
 
 const inter = Inter({
   subsets: ["latin"],
@@ -64,6 +64,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Toaster />
         </Providers>
       </body>
     </html>
