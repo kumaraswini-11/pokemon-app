@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MultiSelect } from "@/components/multi-select";
-import { POKEMON_BASE_STATS } from "@/constants";
+import { getTypeColor, POKEMON_BASE_STATS } from "@/constants";
 import {
   usePokemonGenerations,
   usePokemonTypes,
@@ -28,11 +28,12 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 export interface StatFilter {
   stat: string;
-  min?: number;
-  max?: number;
+  min: number;
+  max: number;
 }
 
 export interface FilterState {
@@ -71,8 +72,20 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
   filterState,
   setFilterState,
   isLoading = false,
-  setIsLoading = () => {},
 }) => {
+  const [isResetting, setIsResetting] = useState(false);
+
+  const defaultFilterState = useMemo(
+    () => ({
+      search: "",
+      types: [],
+      abilities: [],
+      generation: null,
+      stats: DEFAULT_STATS,
+    }),
+    []
+  );
+
   const updateFilter = useCallback(
     <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
       setFilterState({ ...filterState, [key]: value });
@@ -93,19 +106,13 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
     [filterState, setFilterState]
   );
 
-  const resetFilters = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setFilterState({
-        search: "",
-        types: [],
-        abilities: [],
-        generation: null,
-        stats: DEFAULT_STATS,
-      });
-      setIsLoading(false);
-    }, 300);
-  };
+  const resetFilters = useCallback(() => {
+    setIsResetting(true);
+    setFilterState(defaultFilterState);
+
+    // Small delay to show "Resetting..." state, then re-enable filters
+    setTimeout(() => setIsResetting(false), 150);
+  }, [setFilterState, defaultFilterState]);
 
   const GenerationFilter: React.FC = () => {
     const { data: generations, isLoading, isError } = usePokemonGenerations();
@@ -120,7 +127,7 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
           <Select
             value={filterState.generation || ""}
             onValueChange={(value) => updateFilter("generation", value || null)}
-            disabled={isLoading}
+            disabled={isLoading || isResetting}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="All Generations" />
@@ -159,19 +166,20 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
         ) : (
           <>
             <MultiSelect
-              id="multi-select-types"
               options={typeOptions}
               onValueChange={(values) => updateFilter("types", values)}
-              value={filterState.types}
+              defaultValue={filterState.types}
               placeholder="Select types..."
-              animation={0.5}
-              maxCount={3}
-              disabled={isLoading}
+              disabled={isLoading || isResetting}
             />
             {filterState.types.length > 0 && (
               <div className="mt-1 flex flex-wrap gap-1">
                 {filterState.types.map((type) => (
-                  <Badge key={type} variant="secondary" className="text-xs">
+                  <Badge
+                    key={type}
+                    variant="secondary"
+                    className={cn(getTypeColor(type), "text-xs")}
+                  >
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </Badge>
                 ))}
@@ -206,14 +214,11 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
         ) : (
           <>
             <MultiSelect
-              id="multi-select-abilities"
               options={abilityOptions}
               onValueChange={(values) => updateFilter("abilities", values)}
-              value={filterState.abilities}
+              defaultValue={filterState.abilities}
               placeholder="Select abilities..."
-              animation={0.5}
-              maxCount={3}
-              disabled={isLoading}
+              disabled={isLoading || isResetting}
             />
             {filterState.abilities.length > 0 && (
               <div className="mt-1 flex flex-wrap gap-1">
@@ -239,7 +244,7 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
       <Card className="border-0 p-0 shadow-none">
         <CardContent className="bg-muted/40 space-y-4 rounded-lg p-3">
           {POKEMON_BASE_STATS.map(({ key, label, icon: Icon, color }) => {
-            const statFilter = filterState?.stats?.find((s) => s.stat === key);
+            const statFilter = filterState.stats.find((s) => s.stat === key);
             return (
               <div key={key} className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -257,7 +262,7 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
                   max={255}
                   step={1}
                   onValueChange={(values) => updateStatRange(key, values)}
-                  disabled={isLoading}
+                  disabled={isLoading || isResetting}
                 />
               </div>
             );
@@ -279,15 +284,13 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
             variant="outline"
             size="sm"
             onClick={resetFilters}
-            disabled={isLoading}
+            disabled={isLoading || isResetting}
             className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 gap-1 text-xs"
           >
             <RefreshCw
-              className={`size-3 ${
-                isLoading ? "animate-spin" : "group-hover:rotate-90"
-              }`}
+              className={`size-3 ${isResetting ? "animate-spin" : "group-hover:rotate-90"}`}
             />
-            {isLoading ? "Resetting..." : "Reset"}
+            {isResetting ? "Resetting..." : "Reset"}
           </Button>
         </div>
       </CardHeader>

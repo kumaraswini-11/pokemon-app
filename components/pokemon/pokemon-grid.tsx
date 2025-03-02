@@ -1,14 +1,12 @@
 "use client";
-
 import React, { useEffect } from "react";
-import { Loader2 } from "lucide-react";
-
 import { usePokemonList } from "@/hooks/use-pokemon-queries";
 import { useInView } from "react-intersection-observer";
 import { Badge } from "@/components/ui/badge";
 import { PokemonListParams } from "@/types";
 import { PokemonCardSkeleton } from "./pokemon-card-skeleton";
 import { PokemonCard } from "./pokemon-card";
+import { Loader } from "../loader";
 
 interface PokemonGridProps {
   params: Partial<PokemonListParams>;
@@ -31,6 +29,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  // Initial loading state for first fetch
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -41,12 +40,26 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     );
   }
 
+  // Error handling
   if (isError) {
     return (
       <div className="py-8 text-center">
         <p className="text-red-500 dark:text-red-400">
           Failed to load Pokemon. Please try again later.
         </p>
+      </div>
+    );
+  }
+
+  const allPokemon = data?.pages.flatMap((page) => page.results) || [];
+
+  // Check if there are no results after applying filters
+  if (allPokemon.length === 0) {
+    return (
+      <div className="py-8 text-center">
+        <Badge variant="secondary" className="px-4 py-1.5 text-sm">
+          No Pokemon found with current filters
+        </Badge>
       </div>
     );
   }
@@ -62,20 +75,18 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
           </React.Fragment>
         ))}
       </div>
+
+      {/* Footer area for loading indicators or end messages */}
       <div ref={ref} className="col-span-full py-8 text-center">
         {isFetchingNextPage ? (
-          <div className="flex items-center justify-center gap-2">
-            <Loader2 className="size-5 animate-spin text-gray-500 dark:text-gray-400" />
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Loading more Pokemon...
-            </span>
-          </div>
+          <Loader message="Loading more Pokemon..." />
         ) : hasNextPage ? (
           <Badge
             variant="outline"
             className="cursor-pointer px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            onClick={() => fetchNextPage()}
           >
-            Scroll to load more
+            Load more Pokemon
           </Badge>
         ) : (
           <Badge variant="secondary" className="px-4 py-1.5 text-sm">

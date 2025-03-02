@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeftRight, Loader2 } from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,6 +28,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import { PokemonData } from "@/types";
 import { getTypeColor, POKEMON_IMAGE_BASE_URL } from "@/constants";
 import { cn } from "@/lib/utils";
+import { Loader } from "@/components/loader";
 
 interface ComparisonPokemon {
   id: string;
@@ -93,9 +94,7 @@ const PokemonPreview = ({
 }) => (
   <Card className="bg-gray-50 p-4 transition-shadow hover:shadow-md">
     {isLoading ? (
-      <div className="flex h-40 items-center justify-center text-sm text-gray-500">
-        Loading...
-      </div>
+      <Loader />
     ) : error ? (
       <div className="flex h-40 items-center justify-center text-sm text-red-500">
         Error loading Pokemon
@@ -359,7 +358,7 @@ const TypeEffectivenessComparison = ({
           </p>
         ) : (
           <p className="text-lg font-semibold text-gray-600">
-            It's an even matchup! ⚖️
+            It&apos;s an even matchup! ⚖️
           </p>
         )}
       </div>
@@ -457,15 +456,7 @@ const PokemonComparison = () => {
     });
   };
 
-  if (isListLoading)
-    return (
-      <div className="mt-9 flex items-center justify-center gap-1 text-gray-900">
-        <Loader2 className="animate-spin text-blue-900" aria-hidden="true" />
-        <span className="text-sm" aria-live="polite">
-          Loading Pokemon list...
-        </span>
-      </div>
-    );
+  if (isListLoading) return <Loader message="Loading Pokemon list..." />;
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">

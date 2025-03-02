@@ -2,7 +2,7 @@ export interface PokemonListParams {
   search?: string;
   types?: string[];
   abilities?: string[];
-  generation?: string;
+  generation?: string | null;
   stats?: StatFilter[];
   limit?: number;
   offset?: number;

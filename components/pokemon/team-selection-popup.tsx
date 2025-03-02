@@ -115,28 +115,35 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
 
   const teamList = useMemo(
     () =>
-      teams.map((team) => (
+      teams?.map((team) => (
         <Button
           key={team.id}
           variant="outline"
-          className="flex w-full items-center justify-between gap-2"
+          size="lg"
+          className="border-border hover:bg-muted flex w-full items-center justify-between gap-1 rounded-md border p-3 transition"
           onClick={() => handleAddToTeam(team.id)}
           aria-label={`Add to ${team.name} team`}
         >
-          <div className="flex items-center gap-2">
-            <span>{team.name}</span>
-            <Badge variant="secondary">
-              {team.members.length}/{MAX_POKEMON_PER_TEAM}
-            </Badge>
-          </div>
-          {/* <Check className="size-4" /> */}
-
-          {/* Team members name */}
-          {team.members.length > 0 && (
-            <div className="text-muted-foreground mt-2 text-xs">
-              Members: {team.members.map((member) => member.name).join(", ")}
+          {/* Left Section: Team Info */}
+          <div className="flex w-full flex-col items-start">
+            {/* Team Name + Badge */}
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-foreground text-sm font-medium">
+                {team.name}
+              </span>
+              <Badge variant="secondary" className="px-2 py-0 text-xs">
+                {team.members.length}/{MAX_POKEMON_PER_TEAM}
+              </Badge>
             </div>
-          )}
+
+            {/* Team Members List */}
+            {team.members.length > 0 && (
+              <p className="text-muted-foreground line-clamp-2 text-xs leading-tight text-wrap">
+                <span className="text-foreground font-medium">Members:</span>{" "}
+                {team.members.map((member) => member.name).join(", ")}
+              </p>
+            )}
+          </div>
         </Button>
       )),
     [teams, handleAddToTeam]
@@ -144,7 +151,7 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Select a Team</DialogTitle>
           <DialogDescription>

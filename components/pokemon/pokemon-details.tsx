@@ -35,6 +35,7 @@ import {
   getMaxStat,
   POKEMON_BASE_STATS,
 } from "@/constants";
+import { toast } from "sonner";
 
 interface PokemonDetailsProps {
   name: string;
@@ -66,9 +67,9 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
   }
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-6">
+    <div className="container mx-auto max-w-5xl px-2 py-4">
       {/* Header Section */}
-      <Card className="mb-6 overflow-hidden">
+      <Card className="mb-6 overflow-hidden py-0">
         <CardContent className="p-0">
           <div className="flex flex-col md:flex-row">
             {/* Image column */}
@@ -121,14 +122,56 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button size="icon" variant="outline">
-                    <Heart className="h-4 w-4" />
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => {
+                      toast("🚀 Coming Soon!", {
+                        description:
+                          "We're working hard to bring this feature to you. Stay tuned!",
+                        style: {
+                          backgroundColor: "#0a1124",
+                          color: "#ffffff",
+                          border: "1px solid #0e1629",
+                        },
+                      });
+                    }}
+                  >
+                    <Heart className="size-4" />
                   </Button>
-                  <Button size="icon" variant="outline">
-                    <Share2 className="h-4 w-4" />
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => {
+                      toast("🚀 Coming Soon!", {
+                        description:
+                          "We're working hard to bring this feature to you. Stay tuned!",
+                        style: {
+                          backgroundColor: "#0a1124",
+                          color: "#ffffff",
+                          border: "1px solid #0e1629",
+                        },
+                      });
+                    }}
+                  >
+                    <Share2 className="size-4" />
                   </Button>
-                  <Button size="icon" variant="outline">
-                    <Download className="h-4 w-4" />
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => {
+                      toast("🚀 Coming Soon!", {
+                        description:
+                          "We're working hard to bring this feature to you. Stay tuned!",
+                        style: {
+                          backgroundColor: "#0a1124",
+                          color: "#ffffff",
+                          border: "1px solid #0e1629",
+                        },
+                      });
+                    }}
+                  >
+                    <Download className="size-4" />
                   </Button>
                 </div>
               </div>
@@ -176,9 +219,9 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="bg-muted/20 px-6 py-3">
+        {/* <CardFooter className="bg-muted/20 px-6 py-3">
           <Button className="w-full">Add to Team</Button>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
 
       {/* Tabs Section */}
