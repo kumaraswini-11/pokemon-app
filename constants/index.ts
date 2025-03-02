@@ -66,3 +66,9 @@ export const getTypeColor = (type: string) => {
   };
   return typeColors[type] || "bg-gray-200 text-gray-700";
 };
+
+export const CATEGORY_COLORS: Record<string, string> = {
+  physical: "bg-orange-500 dark:bg-orange-600",
+  special: "bg-indigo-500 dark:bg-indigo-600",
+  status: "bg-emerald-500 dark:bg-emerald-600",
+};

@@ -8,6 +8,7 @@ import {
   Move,
   Stat,
   Evolution,
+  TypeEffectiveness,
 } from "@/types";
 
 interface PokemonListResponse {
@@ -237,5 +238,74 @@ export const usePokemonDetails = (name: string) => {
     },
     staleTime: 5 * 60 * 1000,
     enabled: !!name,
+  });
+};
+
+// Fetch All Pokemon Species (helps only for auto complete)
+export const usePokemonSpecies = (name: string) => {
+  return useQuery({
+    queryKey: ["pokemon-species", name],
+    queryFn: async (): Promise<{ name: string; url: string }[]> => {
+      const { data } = await api.get("/pokemon-species");
+      return data.results;
+    },
+    enabled: !!name,
+    staleTime: Infinity,
+    select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
+  });
+};
+
+// Fetching Type Effectiveness
+export const usePokemonTypeEffectiveness = () => {
+  return useQuery({
+    queryKey: ["type-effectiveness"],
+    queryFn: async (): Promise<Record<string, TypeEffectiveness>> => {
+      const { data: typeList } = await api.get("/type");
+      const types = typeList.results
+        .filter(
+          ({ name }: { name: string }) =>
+            name !== "unknown" && name !== "shadow"
+        )
+        .map(({ name }: { name: string }) => name);
+
+      const extractNames = (arr: { name: string }[] = []) =>
+        arr.map((t) => t.name);
+
+      const typeData = await Promise.all(
+        types.map(async (type) => {
+          const { data } = await api.get(`/type/${type}`);
+          return {
+            name: type,
+            double_damage_to: extractNames(
+              data.damage_relations.double_damage_to
+            ),
+            double_damage_from: extractNames(
+              data.damage_relations.double_damage_from
+            ),
+            half_damage_to: extractNames(data.damage_relations.half_damage_to),
+            half_damage_from: extractNames(
+              data.damage_relations.half_damage_from
+            ),
+            no_damage_to: extractNames(data.damage_relations.no_damage_to),
+            no_damage_from: extractNames(data.damage_relations.no_damage_from),
+          };
+        })
+      );
+
+      return Object.fromEntries(
+        typeData.map((type) => [
+          type.name,
+          {
+            double_damage_to: type.double_damage_to,
+            double_damage_from: type.double_damage_from,
+            half_damage_to: type.half_damage_to,
+            half_damage_from: type.half_damage_from,
+            no_damage_to: type.no_damage_to,
+            no_damage_from: type.no_damage_from,
+          },
+        ])
+      );
+    },
+    staleTime: Infinity,
   });
 };

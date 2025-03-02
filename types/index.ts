@@ -43,6 +43,15 @@ export interface Evolution {
   image: string;
 }
 
+export interface TypeEffectiveness {
+  double_damage_to: string[];
+  double_damage_from: string[];
+  half_damage_to: string[];
+  half_damage_from: string[];
+  no_damage_to: string[];
+  no_damage_from: string[];
+}
+
 export interface PokemonData {
   id: number;
   name: string;
