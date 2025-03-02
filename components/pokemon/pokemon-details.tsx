@@ -87,7 +87,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
     return (
       <div className="container mx-auto max-w-5xl px-4 py-8 text-center">
         <p className="text-red-500 dark:text-red-400">
-          Failed to load Pokémon details. Please try again.
+          Failed to load Pokemon details. Please try again.
         </p>
       </div>
     );

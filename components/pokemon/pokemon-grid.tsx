@@ -45,7 +45,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     return (
       <div className="py-8 text-center">
         <p className="text-red-500 dark:text-red-400">
-          Failed to load Pokémon. Please try again later.
+          Failed to load Pokemon. Please try again later.
         </p>
       </div>
     );
@@ -67,7 +67,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
           <div className="flex items-center justify-center gap-2">
             <Loader2 className="size-5 animate-spin text-gray-500 dark:text-gray-400" />
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Loading more Pokémon...
+              Loading more Pokemon...
             </span>
           </div>
         ) : hasNextPage ? (
@@ -79,7 +79,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
           </Badge>
         ) : (
           <Badge variant="secondary" className="px-4 py-1.5 text-sm">
-            No more Pokémon
+            No more Pokemon
           </Badge>
         )}
       </div>

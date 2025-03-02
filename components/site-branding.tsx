@@ -15,7 +15,7 @@ export const SiteBranding = () => {
         className="object-contain"
         priority={false} // Helps with Core Web Vitals
       />
-      <span className="text-xl font-bold tracking-tight">PokéBuilder</span>
+      <span className="text-xl font-bold tracking-tight">PokeBuilder</span>
     </Link>
   );
 };
