@@ -4,11 +4,11 @@ A full-stack Pokemon application that allows users to explore Pokemon, build cus
 
 ![PokeTeam Builder Banner](https://your-domain.com/og-image.jpg)
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=white)
-![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat&logo=react-query&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand-000000?style=flat&logo=zustand&logoColor=white)
-![Auth.js](https://img.shields.io/badge/Auth.js-000000?style=flat&logo=auth0&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge&logo=zustand&logoColor=white)
+![Auth.js](https://img.shields.io/badge/Auth.js-000000?style=for-the-badge&logo=auth0&logoColor=white)
 
 ## Overview
 
@@ -20,24 +20,17 @@ PokeTeam Builder & Pokedex is a modern web application designed for Pokemon enth
 - **Team Builder**: Create and manage custom Pokemon teams with an intuitive interface.
 - **Stat Analysis**: Visualize and compare Pokemon statistics for strategic planning.
 - **SEO Optimized**: Built with Next.js for fast load times and discoverability.
+- **Authentication Support**: Secure user authentication implemented using Auth.js.  
 
 ## Installation & Setup
 
 Follow these steps to get the project running locally:
 
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm (v7 or higher)
-- Git
-
-### Steps
-
 1. **Clone the Repository & Install Dependencies**  
    Clone the project from GitHub and install the required packages:
 
    ```bash
-   git clone https://github.com/your-username/poketeam-builder.git
+   git clone https://github.com/kumaraswini-11/pokemon-app.git
    cd poketeam-builder
 
    npm i
