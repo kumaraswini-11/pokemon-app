@@ -65,3 +65,16 @@ export interface PokemonData {
   weight: number;
   description: string;
 }
+
+export type PokemonInTeam = {
+  id: number;
+  name: string;
+  image?: string;
+  types: string[];
+};
+
+export type Team = {
+  id: string;
+  name: string;
+  members: PokemonInTeam[];
+};

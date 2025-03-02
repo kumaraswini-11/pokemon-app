@@ -72,3 +72,6 @@ export const CATEGORY_COLORS: Record<string, string> = {
   special: "bg-indigo-500 dark:bg-indigo-600",
   status: "bg-emerald-500 dark:bg-emerald-600",
 };
+
+export const MAX_TEAM = 15;
+export const MAX_POKEMON_PER_TEAM = 6;

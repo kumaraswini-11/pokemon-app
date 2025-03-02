@@ -1,0 +1,33 @@
+1️⃣ How do I compare two Pokemon's type effectiveness?
+2️⃣ What should I show to the user in a type comparison?
+3️⃣ How can I explain to the user how type effectiveness is calculated?
+4️⃣ What does "Implement a Team Builder" mean?
+5️⃣ Should the Team Builder UI be a separate page or part of the Pokemon grid?
+6️⃣ What does "NextAuth.js for authentication (optional for user-specific teams)" mean? Is it related to the Team Builder?
+7️⃣ Can users create teams without logging in?
+8️⃣ Should I allow multiple teams or just one if there’s no login?
+9️⃣ Can I store the team details using useState, or do I need Zustand?
+🔟 How does the Drag & Drop functionality work? Is it within the same team or between teams?
+1️⃣1️⃣ Is it useful to allow Drag & Drop inside the same team if the Pokemon don’t change?
+1️⃣2️⃣ Should each Pokemon card in the grid have an "Add to Team" button, or should there be only one button for all?
+1️⃣3️⃣ How do I support multiple teams in the UI if there is only one "Add to Team" button?
+1️⃣4️⃣ Should I limit the number of teams a user can create?
+1️⃣5️⃣ If a user creates 10 teams, how should they be displayed on the Team Builder page?
+1️⃣6️⃣ How should the Drag & Drop functionality work between teams?
+1️⃣7️⃣ What details should be shown inside each team card?
+1️⃣8️⃣ Should I only show the Pokemon's name inside the team, or more details?
+
+📌 Summary of What We Discussed & Decided
+Feature	Decision / Implementation
+Pokemon Type Comparison	Show effectiveness as x2, x0.5, etc., and explain calculations clearly to users.
+Team Creation	Allow multiple teams (not just one).
+Where to Store Teams?	Use Zustand (not useState) for better state management.
+"Add to Team" Button	Each Pokemon card in the grid has its own Add to Team button.
+Drag & Drop Functionality	Users can drag Pokemon between teams, not inside the same team.
+Limit on Teams?	No strict limit, but UI should handle multiple teams (e.g., scrollable list).
+Team UI	Each team appears as a card with Pokemon inside.
+Pokemon Details Inside Teams	Show image, name, types, and remove button inside the team.
+UI for Multiple Teams	Display teams as cards in a grid/list format.
+How Drag & Drop Works?	Drag Pokemon from one team card to another.
+Team Deletion?	Each team should have a Delete button.
+Team Name Editing?	Allow users to rename their teams.
