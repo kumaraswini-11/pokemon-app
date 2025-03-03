@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -13,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTeamStore } from "@/store/team-store";
-import { toast } from "sonner";
 import { MAX_POKEMON_PER_TEAM, MAX_TEAM } from "@/constants";
 
 interface TeamSelectionPopupProps {

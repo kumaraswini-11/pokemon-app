@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
+
 import { usePokemonList } from "@/hooks/use-pokemon-queries";
 import { useInView } from "react-intersection-observer";
 import { Badge } from "@/components/ui/badge";
@@ -7,12 +8,19 @@ import { PokemonListParams } from "@/types";
 import { PokemonCardSkeleton } from "./pokemon-card-skeleton";
 import { PokemonCard } from "./pokemon-card";
 import { Loader } from "../loader";
+import useDebounce from "@/hooks/use-debounce";
+import { DEBOUNCE_DELAY } from "@/constants";
 
 interface PokemonGridProps {
   params: Partial<PokemonListParams>;
 }
 
 export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
+  const { ref, inView } = useInView({
+    triggerOnce: false, // Allow re-triggering when scrolled back
+    threshold: 0.1, // Adjusted for better accuracy
+  });
+
   const {
     data,
     fetchNextPage,
@@ -21,16 +29,22 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     isLoading,
     isError,
   } = usePokemonList(params);
-  const { ref, inView } = useInView();
 
+  const allPokemon = data?.pages?.flatMap((page) => page.results) ?? [];
+
+  // Debounce the inView value to prevent unnecessary fetches
+  const debouncedInView = useDebounce(inView, DEBOUNCE_DELAY);
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (debouncedInView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [debouncedInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Initial loading state for first fetch
+  // Prevent flickering between loading states by introducing a delay before showing "Load More" button. Debounce the visibility of "Load More" button
+  const showLoadMore = useDebounce(!isFetchingNextPage, 500);
+
   if (isLoading) {
+    // Initial loading state for first fetch
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -40,7 +54,6 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     );
   }
 
-  // Error handling
   if (isError) {
     return (
       <div className="py-8 text-center">
@@ -51,14 +64,12 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     );
   }
 
-  const allPokemon = data?.pages.flatMap((page) => page.results) || [];
-
-  // Check if there are no results after applying filters
   if (allPokemon.length === 0) {
+    // Check if there are no results after applying filters
     return (
       <div className="py-8 text-center">
         <Badge variant="secondary" className="px-4 py-1.5 text-sm">
-          No Pokemon found with current filters
+          No Pokemon found with current filters.
         </Badge>
       </div>
     );
@@ -67,12 +78,8 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
   return (
     <div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-        {data?.pages.map((page, i) => (
-          <React.Fragment key={i}>
-            {page.results.map((pokemon) => (
-              <PokemonCard key={pokemon.id} pokemon={pokemon} pageIndex={i} />
-            ))}
-          </React.Fragment>
+        {allPokemon?.map((pokemon, i) => (
+          <PokemonCard key={pokemon.id} pokemon={pokemon} pageIndex={i} />
         ))}
       </div>
 
@@ -80,10 +87,10 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
       <div ref={ref} className="col-span-full py-8 text-center">
         {isFetchingNextPage ? (
           <Loader message="Loading more Pokemon..." />
-        ) : hasNextPage ? (
+        ) : hasNextPage && !inView && showLoadMore ? ( // Show button ONLY IF useInView didn't trigger, means Now the button appears only if auto-fetching fails, with a delay of 500 ms to stop flikering
           <Badge
-            variant="outline"
-            className="cursor-pointer px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            variant="default"
+            className="x-4 py-1.5 text-sm"
             onClick={() => fetchNextPage()}
           >
             Load more Pokemon

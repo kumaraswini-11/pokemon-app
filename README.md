@@ -20,7 +20,7 @@ PokeTeam Builder & Pokedex is a modern web application designed for Pokemon enth
 - **Team Builder**: Create and manage custom Pokemon teams with an intuitive interface.
 - **Stat Analysis**: Visualize and compare Pokemon statistics for strategic planning.
 - **SEO Optimized**: Built with Next.js for fast load times and discoverability.
-- **Authentication Support**: Secure user authentication implemented using Auth.js.  
+- **Authentication Support**: Secure user authentication implemented using Auth.js.
 
 ## Installation & Setup
 

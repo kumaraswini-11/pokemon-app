@@ -17,8 +17,6 @@ import { toast } from "sonner";
 
 import { useTeamStore, analyzeTeam } from "@/store/team-store";
 import { getTypeColor, MAX_POKEMON_PER_TEAM } from "@/constants";
-import { PokemonInTeam, Team, TypeEffectiveness } from "@/types";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,14 +37,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  TeamGridProps,
+  TeamCardProps,
+  DragItem,
+  TeamAnalysisProps,
+  TeamAnalysisItemProps,
+  PokemonItemProps,
+} from "@/types";
 
 const ITEM_TYPE = "POKEMON";
-
-interface DragItem {
-  type: string;
-  pokemon: PokemonInTeam;
-  fromTeamId: string;
-}
 
 export default function TeamBuilderPage() {
   const { data: typeEffectiveness, isLoading } = usePokemonTypeEffectiveness();
@@ -60,7 +60,7 @@ export default function TeamBuilderPage() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="container mx-auto space-y-3 py-2">
+      <div className="container mx-auto space-y-3 px-6 py-2">
         <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
           <div className="space-y-0.5">
             <h2 className="text-xl font-semibold tracking-tight">
@@ -86,10 +86,6 @@ export default function TeamBuilderPage() {
       </div>
     </DndProvider>
   );
-}
-
-interface TeamGridProps {
-  typeEffectiveness?: Record<string, TypeEffectiveness>;
 }
 
 function TeamGrid({ typeEffectiveness }: TeamGridProps) {
@@ -145,35 +141,42 @@ function EmptyState({ onAddTeam }: { onAddTeam: () => void }) {
   );
 }
 
-interface TeamCardProps {
-  team: Team;
-  typeEffectiveness?: Record<string, TypeEffectiveness>;
-  onRemove: () => void;
-}
-
 function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
   const { addPokemonToTeam, removePokemonFromTeam, updateTeamName } =
     useTeamStore();
+
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(team.name);
   const analysis = analyzeTeam(team, typeEffectiveness || {});
 
+  // useDrop is a React DnD hook that enables a component to act as a drop target
   const [{ isOver, canDrop }, drop] = useDrop({
+    // Accept only items of type ITEM_TYPE (e.g., a Pokemon object).
     accept: ITEM_TYPE,
+
+    // Function triggered when a draggable item is dropped on this target.
     drop: (item: DragItem) => {
+      // Prevent moving a Pokémon within the same team.
       if (team.id === item.fromTeamId) return;
+
+      // Check the team alredy riched the maximun limit
       if (team.members.length >= MAX_POKEMON_PER_TEAM) {
         toast.error(`Team full (${MAX_POKEMON_PER_TEAM} max)`);
         return;
       }
+
+      // Pokemon alredy exits in the team
       if (team.members.some((p) => p.id === item.pokemon.id)) {
         toast.error(`${item.pokemon.name} already in ${team.name}`);
         return;
       }
+
       removePokemonFromTeam(item.fromTeamId, item.pokemon.id);
       addPokemonToTeam(team.id, item.pokemon);
       toast.success(`${item.pokemon.name} moved to ${team.name}`);
     },
+
+    // Collect function gathers drop state information.
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),
@@ -327,16 +330,6 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
   );
 }
 
-interface TeamAnalysisProps {
-  analysis: {
-    score: number | null;
-    typeCoverage: { type: string; count: number }[];
-    weaknesses: { type: string; count: number }[];
-    resistances: { type: string; count: number }[];
-    immunities: { type: string; count: number }[];
-  };
-}
-
 function TeamAnalysis({ analysis }: TeamAnalysisProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -355,6 +348,7 @@ function TeamAnalysis({ analysis }: TeamAnalysisProps) {
         </Badge>
       </div>
 
+      {/* Collasiable team analysis report  */}
       {expanded ? (
         <div className="text-muted-foreground bg-muted/10 space-y-2 rounded-md border p-2 text-[10px]">
           <TeamAnalysisItem
@@ -419,12 +413,6 @@ function TypeSummary({
   );
 }
 
-interface TeamAnalysisItemProps {
-  label: string;
-  items: { type: string; count: number }[];
-  emptyText: string;
-}
-
 function TeamAnalysisItem({ label, items, emptyText }: TeamAnalysisItemProps) {
   return (
     <div>
@@ -446,12 +434,6 @@ function TeamAnalysisItem({ label, items, emptyText }: TeamAnalysisItemProps) {
       )}
     </div>
   );
-}
-
-interface PokemonItemProps {
-  pokemon: PokemonInTeam;
-  teamId: string;
-  teamName: string;
 }
 
 function PokemonItem({ pokemon, teamId, teamName }: PokemonItemProps) {

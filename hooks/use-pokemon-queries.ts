@@ -30,13 +30,13 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
   return useInfiniteQuery({
     queryKey: ["pokemon", params],
     queryFn: async ({ pageParam = 0 }): Promise<PokemonListResponse> => {
-      const limit = params.limit || 20;
+      const limit = params.limit || 5;
       const offset = pageParam * limit;
       const { data } = await api.get(
         `/pokemon?limit=${limit}&offset=${offset}`
       );
 
-      // Fetch detailed data for each Pokemon
+      // Fetch detailed data for each Pokémon
       const detailedResults = await Promise.all(
         data.results.map(async (p: { name: string; url: string }) => {
           const { data: details } = await api.get(p.url);
@@ -44,6 +44,7 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
           const { data: generationData } = await api.get(
             species.generation.url
           );
+
           return {
             id: details.id,
             name: details.name,
@@ -59,37 +60,10 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
         })
       );
 
-      // Apply filters client-side
-      const filteredResults = detailedResults.filter((pokemon) => {
-        const statMap = pokemon.stats.reduce(
-          (acc: Record<string, number>, s) => {
-            acc[s.stat] = s.value;
-            return acc;
-          },
-          {}
-        );
-
-        return (
-          (!params.search ||
-            pokemon.name.toLowerCase().includes(params.search.toLowerCase())) &&
-          (!params.types?.length ||
-            params.types.every((t) => pokemon.types.includes(t))) &&
-          (!params.abilities?.length ||
-            params.abilities.every((a) => pokemon.abilities.includes(a))) &&
-          (!params.generation || pokemon.generation === params.generation) &&
-          (!params.stats?.length ||
-            params.stats.every(
-              (filter) =>
-                (!filter.min || statMap[filter.stat] >= filter.min) &&
-                (!filter.max || statMap[filter.stat] <= filter.max)
-            ))
-        );
-      });
-
       return {
-        results: filteredResults,
+        results: detailedResults,
         nextOffset: data.next ? offset + limit : null,
-        total: data.count, // Unfiltered total
+        total: data.count, // Total Pokémon count (before filtering)
       };
     },
     getNextPageParam: (lastPage) =>
@@ -98,48 +72,49 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
         : undefined,
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-};
 
-// Fetch All Pokemon Types
-export const usePokemonTypes = () => {
-  return useQuery({
-    queryKey: ["types"],
-    queryFn: async (): Promise<string[]> => {
-      const { data } = await api.get("/type");
-      return data.results
-        .map((type: { name: string }) => type.name)
-        .filter((name: string) => name !== "unknown" && name !== "shadow");
-    },
-    staleTime: Infinity,
-    select: (data) => data.sort(),
-  });
-};
+    // Apply filtering with React Query’s select function
+    select: (data) => {
+      const allPokemon = data.pages.flatMap((page) => page.results);
 
-// Fetch All Generations
-export const usePokemonGenerations = () => {
-  return useQuery({
-    queryKey: ["generations"],
-    queryFn: async (): Promise<string[]> => {
-      const { data } = await api.get("/generation");
-      return data.results.map((gen: { name: string }) => gen.name);
-    },
-    staleTime: Infinity,
-    select: (data) => data.sort(),
-  });
-};
+      return {
+        ...data,
+        pages: [
+          {
+            results: allPokemon.filter((pokemon) => {
+              const statMap = pokemon.stats.reduce(
+                (acc: Record<string, number>, s) => {
+                  acc[s.stat] = s.value;
+                  return acc;
+                },
+                {}
+              );
 
-// Fetch All Pokemon Abilities
-export const usePokemonAbilities = () => {
-  return useQuery({
-    queryKey: ["abilities"],
-    queryFn: async (): Promise<string[]> => {
-      const { data } = await api.get("/ability");
-      return data.results.map((ability: { name: string }) => ability.name);
+              return (
+                (!params.search ||
+                  pokemon.name
+                    .toLowerCase()
+                    .includes(params.search.toLowerCase())) &&
+                (!params.types?.length ||
+                  params.types.every((t) => pokemon.types.includes(t))) &&
+                (!params.abilities?.length ||
+                  params.abilities.every((a) =>
+                    pokemon.abilities.includes(a)
+                  )) &&
+                (!params.generation ||
+                  pokemon.generation === params.generation) &&
+                (!params.stats?.length ||
+                  params.stats.every(
+                    (filter) =>
+                      (!filter.min || statMap[filter.stat] >= filter.min) &&
+                      (!filter.max || statMap[filter.stat] <= filter.max)
+                  ))
+              );
+            }),
+          },
+        ],
+      };
     },
-    staleTime: Infinity,
-    select: (data) => data.sort(),
   });
 };
 
@@ -252,6 +227,47 @@ export const usePokemonSpecies = (name: string) => {
     enabled: !!name,
     staleTime: Infinity,
     select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
+  });
+};
+
+// Fetch All Pokemon Types
+export const usePokemonTypes = () => {
+  return useQuery({
+    queryKey: ["types"],
+    queryFn: async (): Promise<string[]> => {
+      const { data } = await api.get("/type");
+      return data.results
+        .map((type: { name: string }) => type.name)
+        .filter((name: string) => name !== "unknown" && name !== "shadow");
+    },
+    staleTime: Infinity,
+    select: (data) => data.sort(),
+  });
+};
+
+// Fetch All Generations
+export const usePokemonGenerations = () => {
+  return useQuery({
+    queryKey: ["generations"],
+    queryFn: async (): Promise<string[]> => {
+      const { data } = await api.get("/generation");
+      return data.results.map((gen: { name: string }) => gen.name);
+    },
+    staleTime: Infinity,
+    select: (data) => data.sort(),
+  });
+};
+
+// Fetch All Pokemon Abilities
+export const usePokemonAbilities = () => {
+  return useQuery({
+    queryKey: ["abilities"],
+    queryFn: async (): Promise<string[]> => {
+      const { data } = await api.get("/ability");
+      return data.results.map((ability: { name: string }) => ability.name);
+    },
+    staleTime: Infinity,
+    select: (data) => data.sort(),
   });
 };
 

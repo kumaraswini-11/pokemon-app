@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+
 import {
   FilterState,
   PokemonFilters,
 } from "@/components/pokemon/pokemon-filter";
 import { PokemonGrid } from "@/components/pokemon/pokemon-grid";
 import { SearchInput } from "@/components/pokemon/pokemon-search-input";
+import { ITEMS_PER_PAGE } from "@/constants";
 
 export default function HomePage() {
   const [filterState, setFilterState] = useState<FilterState>({
@@ -24,7 +26,7 @@ export default function HomePage() {
     ],
   });
 
-  // Memoize params to avoid unnecessary re-renders
+  // Memoize params to avoid unnecessary re-renders - React 19 has in-bult compiler, so we can ignoer. Its just for safe side.
   const params = useMemo(
     () => ({
       search: filterState.search,
@@ -32,7 +34,7 @@ export default function HomePage() {
       abilities: filterState.abilities,
       generation: filterState.generation,
       stats: filterState.stats,
-      limit: 20,
+      limit: ITEMS_PER_PAGE,
     }),
     [filterState]
   );

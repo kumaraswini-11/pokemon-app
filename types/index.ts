@@ -78,3 +78,42 @@ export type Team = {
   name: string;
   members: PokemonInTeam[];
 };
+
+// Team bulder Page
+export interface DragItem {
+  type: string;
+  pokemon: PokemonInTeam;
+  fromTeamId: string;
+}
+
+export interface TeamGridProps {
+  typeEffectiveness?: Record<string, TypeEffectiveness>;
+}
+
+export interface TeamCardProps {
+  team: Team;
+  typeEffectiveness?: Record<string, TypeEffectiveness>;
+  onRemove: () => void;
+}
+
+export interface TeamAnalysisProps {
+  analysis: {
+    score: number | null;
+    typeCoverage: { type: string; count: number }[];
+    weaknesses: { type: string; count: number }[];
+    resistances: { type: string; count: number }[];
+    immunities: { type: string; count: number }[];
+  };
+}
+
+export interface TeamAnalysisItemProps {
+  label: string;
+  items: { type: string; count: number }[];
+  emptyText: string;
+}
+
+export interface PokemonItemProps {
+  pokemon: PokemonInTeam;
+  teamId: string;
+  teamName: string;
+}

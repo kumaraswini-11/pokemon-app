@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 // Base configuration for API requests
 export const api = axios.create({
   baseURL: POKEMON_API_BASE_URL,
-  timeout: 10000,
+  timeout: 10 * 1000, // 10 seconds timeout
   headers: {
     "Content-Type": "application/json",
   },

@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import { ArrowLeftRight } from "lucide-react";
+import Image from "next/image";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
+
 import {
   Select,
   SelectContent,
@@ -23,8 +26,6 @@ import {
   usePokemonDetails,
   usePokemonTypeEffectiveness,
 } from "@/hooks/use-pokemon-queries";
-import Image from "next/image";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import { PokemonData } from "@/types";
 import { getTypeColor, POKEMON_IMAGE_BASE_URL } from "@/constants";
 import { cn } from "@/lib/utils";
@@ -233,10 +234,7 @@ const TypeEffectivenessComparison = ({
     return total;
   };
 
-  if (isTypeLoading)
-    return (
-      <div className="text-center text-gray-500">Loading type data...</div>
-    );
+  if (isTypeLoading) return <Loader message="Loading type data..." />;
   if (typeError)
     return (
       <div className="text-center text-red-500">Error loading type data</div>
@@ -406,8 +404,7 @@ const MovePoolAnalysis = ({
   </div>
 );
 
-// Main Component
-const PokemonComparison = () => {
+export default function PokemonComparison() {
   const [selectedPokemon, setSelectedPokemon] = useState<{
     left: ComparisonPokemon;
     right: ComparisonPokemon;
@@ -550,6 +547,4 @@ const PokemonComparison = () => {
         )}
     </div>
   );
-};
-
-export default PokemonComparison;
+}

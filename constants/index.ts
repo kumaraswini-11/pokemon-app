@@ -9,7 +9,7 @@ export const POKEMON_END_POINTS = {
 export const POKEMON_IMAGE_BASE_URL =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
 
-export const ITEMS_PER_PAGE = 20;
+export const ITEMS_PER_PAGE = 10;
 export const DEBOUNCE_DELAY = 300;
 
 export const POKEMON_BASE_STATS = [
