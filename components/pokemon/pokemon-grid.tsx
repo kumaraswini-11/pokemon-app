@@ -72,7 +72,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     );
   }
 
-  if (allPokemon.length === 0) {
+  if (allPokemon.length === 0 && isLoading) {
     return (
       <div className="py-8 text-center">
         <Badge variant="secondary" className="px-4 py-1.5 text-sm">
