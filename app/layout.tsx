@@ -26,6 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 // Metadata configuration
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL!),
   // Title configuration: 'default' is used if no other title is provided (in child route segments), while 'template' appends/prepends custom text to child route titles. title.absolute can be used to provide a title that ignores title.template set in parent segments.
   title: {
     default: "Pokemon Team Builder & Pokedex",
