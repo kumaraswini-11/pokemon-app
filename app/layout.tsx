@@ -4,6 +4,7 @@ import { Inter, Poppins, JetBrains_Mono } from "next/font/google";
 import Providers from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -63,10 +64,17 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${poppins.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <Providers>
-          {children}
-          <Toaster richColors />
-        </Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Providers>
+            {children}
+            <Toaster richColors />
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );

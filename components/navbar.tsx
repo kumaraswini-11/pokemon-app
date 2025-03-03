@@ -8,6 +8,7 @@ import { ElementType } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SiteBranding } from "./site-branding";
+import { ThemeSwitcher } from "./theme-switcher";
 
 export interface NavItem {
   href: string;
@@ -30,6 +31,8 @@ export function Navbar() {
         <SiteBranding />
 
         <nav className="flex items-center space-x-1 md:space-x-2 lg:space-x-4">
+          <ThemeSwitcher />
+
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
