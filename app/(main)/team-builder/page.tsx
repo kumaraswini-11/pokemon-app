@@ -45,6 +45,7 @@ import {
   TeamAnalysisItemProps,
   PokemonItemProps,
 } from "@/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ITEM_TYPE = "POKEMON";
 
@@ -195,138 +196,140 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
   };
 
   return (
-    <Card
-      ref={drop}
-      className={cn(
-        "py-2 transition-colors",
-        isOver && canDrop ? "border-primary bg-primary/5 border-2" : null,
-        isOver && !canDrop ? "border-destructive border-2" : null
-      )}
-    >
-      <CardHeader className="flex-row items-center justify-between gap-1 p-2 px-3">
-        {isEditing ? (
-          <div className="flex w-full items-center gap-1">
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSaveName()}
-              className="h-7 text-xs"
-              autoFocus
-            />
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={handleSaveName}
-                    className="size-7"
-                  >
-                    <Check className="size-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Save</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setName(team.name);
-                      setIsEditing(false);
-                    }}
-                    className="size-7"
-                  >
-                    <X className="size-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Cancel</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        ) : (
-          <>
-            <div className="flex min-w-0 flex-col">
-              <CardTitle className="truncate text-base capitalize">
-                {team.name}
-              </CardTitle>
-              <CardDescription className="text-xs">
-                {team.members.length}/{MAX_POKEMON_PER_TEAM}
-              </CardDescription>
-            </div>
-            <div className="flex flex-shrink-0 items-center gap-1">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => setIsEditing(true)}
-                      className="size-7"
-                    >
-                      <Edit className="size-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Rename team</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={onRemove}
-                      className="size-7"
-                    >
-                      <Trash2 className="text-destructive size-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete team</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </>
+    <ScrollArea className="h-[30rem]" key={team.id}>
+      <Card
+        ref={drop}
+        className={cn(
+          "py-2 transition-colors",
+          isOver && canDrop ? "border-primary bg-primary/5 border-2" : null,
+          isOver && !canDrop ? "border-destructive border-2" : null
         )}
-      </CardHeader>
-      <CardContent className="space-y-1.5 px-2 pt-0">
-        {team.members.length ? (
-          <ul className="space-y-1.5">
-            {team.members.map((pokemon) => (
-              <PokemonItem
-                key={pokemon.id}
-                pokemon={pokemon}
-                teamId={team.id}
-                teamName={team.name}
+      >
+        <CardHeader className="flex-row items-center justify-between gap-1 p-2 px-3">
+          {isEditing ? (
+            <div className="flex w-full items-center gap-1">
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSaveName()}
+                className="h-7 text-xs"
+                autoFocus
               />
-            ))}
-          </ul>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={handleSaveName}
+                      className="size-7"
+                    >
+                      <Check className="size-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Save</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setName(team.name);
+                        setIsEditing(false);
+                      }}
+                      className="size-7"
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Cancel</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          ) : (
+            <>
+              <div className="flex min-w-0 flex-col">
+                <CardTitle className="truncate text-base capitalize">
+                  {team.name}
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  {team.members.length}/{MAX_POKEMON_PER_TEAM}
+                </CardDescription>
+              </div>
+              <div className="flex flex-shrink-0 items-center gap-1">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setIsEditing(true)}
+                        className="size-7"
+                      >
+                        <Edit className="size-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Rename team</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={onRemove}
+                        className="size-7"
+                      >
+                        <Trash2 className="text-destructive size-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Delete team</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-1.5 px-2 pt-0">
+          {team.members.length ? (
+            <ul className="space-y-1.5">
+              {team.members.map((pokemon) => (
+                <PokemonItem
+                  key={pokemon.id}
+                  pokemon={pokemon}
+                  teamId={team.id}
+                  teamName={team.name}
+                />
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-md border border-dashed p-1.5 text-center">
+              <p className="text-muted-foreground text-xs font-medium">
+                No Pokemon in this team
+              </p>
+              <p className="text-muted-foreground text-[10px]">
+                Drag Pokemon here from other teams
+              </p>
+            </div>
+          )}
+        </CardContent>
+        {team.members.length > 0 ? (
+          <CardFooter className="px-3 py-1.5">
+            <TeamAnalysis analysis={analysis} />
+          </CardFooter>
         ) : (
-          <div className="rounded-md border border-dashed p-1.5 text-center">
-            <p className="text-muted-foreground text-xs font-medium">
-              No Pokemon in this team
-            </p>
-            <p className="text-muted-foreground text-[10px]">
-              Drag Pokemon here from other teams
-            </p>
-          </div>
+          <CardFooter className="px-3 py-1.5">
+            <div className="text-muted-foreground w-full text-center text-xs italic">
+              Add at least one Pokemon to see team analysis.
+            </div>
+          </CardFooter>
         )}
-      </CardContent>
-      {team.members.length > 0 ? (
-        <CardFooter className="px-3 py-1.5">
-          <TeamAnalysis analysis={analysis} />
-        </CardFooter>
-      ) : (
-        <CardFooter className="px-3 py-1.5">
-          <div className="text-muted-foreground w-full text-center text-xs italic">
-            Add at least one Pokemon to see team analysis.
-          </div>
-        </CardFooter>
-      )}
-    </Card>
+      </Card>
+    </ScrollArea>
   );
 }
 
