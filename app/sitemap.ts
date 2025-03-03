@@ -4,7 +4,7 @@ import { api } from "@/lib/utils";
 
 // Fetch all Pokemon names for dynamic routes
 async function fetchAllPokemonNames(): Promise<string[]> {
-  // This could potentially return a lot of Pokémon (800+), which might cause your sitemap to be very large, that's why limit.
+  // This could potentially return a lot of Pokemon (800+), which might cause your sitemap to be very large, that's why limit.
   const { data } = await api.get("/pokemon?limit=90");
   return data?.results?.map((pokemon: { name: string }) => pokemon.name) ?? [];
 }

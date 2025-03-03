@@ -156,7 +156,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
 
     // Function triggered when a draggable item is dropped on this target.
     drop: (item: DragItem) => {
-      // Prevent moving a Pokémon within the same team.
+      // Prevent moving a Pokemon within the same team.
       if (team.id === item.fromTeamId) return;
 
       // Check the team alredy riched the maximun limit

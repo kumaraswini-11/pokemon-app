@@ -36,7 +36,7 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
         `/pokemon?limit=${limit}&offset=${offset}`
       );
 
-      // Fetch detailed data for each Pokémon
+      // Fetch detailed data for each Pokemon
       const detailedResults = await Promise.all(
         data.results.map(async (p: { name: string; url: string }) => {
           const { data: details } = await api.get(p.url);
@@ -63,7 +63,7 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
       return {
         results: detailedResults,
         nextOffset: data.next ? offset + limit : null,
-        total: data.count, // Total Pokémon count (before filtering)
+        total: data.count, // Total Pokemon count (before filtering)
       };
     },
     getNextPageParam: (lastPage) =>
