@@ -28,23 +28,31 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
     isFetchingNextPage,
     isLoading,
     isError,
+    refetch,
   } = usePokemonList(params);
 
   const allPokemon = data?.pages?.flatMap((page) => page.results) ?? [];
 
   // Debounce the inView value to prevent unnecessary fetches
   const debouncedInView = useDebounce(inView, DEBOUNCE_DELAY);
+
   useEffect(() => {
     if (debouncedInView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [debouncedInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Prevent flickering between loading states by introducing a delay before showing "Load More" button. Debounce the visibility of "Load More" button
-  const showLoadMore = useDebounce(!isFetchingNextPage, 500);
+  // Trigger a refetch if the cached data has no results
+  useEffect(() => {
+    if (!isLoading && allPokemon.length === 0) {
+      refetch();
+    }
+  }, [allPokemon.length, isLoading, refetch]);
+
+  // Prevent flickering of "Load More" button
+  const showLoadMore = useDebounce(hasNextPage && !isFetchingNextPage, 500);
 
   if (isLoading) {
-    // Initial loading state for first fetch
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -65,7 +73,6 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
   }
 
   if (allPokemon.length === 0) {
-    // Check if there are no results after applying filters
     return (
       <div className="py-8 text-center">
         <Badge variant="secondary" className="px-4 py-1.5 text-sm">
@@ -78,7 +85,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
   return (
     <div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-        {allPokemon?.map((pokemon, i) => (
+        {allPokemon.map((pokemon, i) => (
           <PokemonCard key={pokemon.id} pokemon={pokemon} pageIndex={i} />
         ))}
       </div>
@@ -87,10 +94,10 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({ params }) => {
       <div ref={ref} className="col-span-full py-8 text-center">
         {isFetchingNextPage ? (
           <Loader message="Loading more Pokemon..." />
-        ) : hasNextPage && !inView && showLoadMore ? ( // Show button ONLY IF useInView didn't trigger, means Now the button appears only if auto-fetching fails, with a delay of 500 ms to stop flikering
+        ) : showLoadMore ? (
           <Badge
             variant="default"
-            className="x-4 py-1.5 text-sm"
+            className="px-4 py-1.5 text-sm"
             onClick={() => fetchNextPage()}
           >
             Load more Pokemon

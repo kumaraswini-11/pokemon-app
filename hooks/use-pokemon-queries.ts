@@ -27,7 +27,7 @@ interface PokemonListResponse {
 
 // Fetch Pokemon List with Client-Side Filtering and Infinite Scroll
 export const usePokemonList = (params: Partial<PokemonListParams>) => {
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: ["pokemon", params],
     queryFn: async ({ pageParam = 0 }): Promise<PokemonListResponse> => {
       const limit = params.limit || 5;
@@ -72,50 +72,49 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
         : undefined,
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false, // Ensures filters are handled properly
 
     // Apply filtering with React Query’s select function
     select: (data) => {
       const allPokemon = data.pages.flatMap((page) => page.results);
 
-      return {
-        ...data,
-        pages: [
-          {
-            results: allPokemon.filter((pokemon) => {
-              const statMap = pokemon.stats.reduce(
-                (acc: Record<string, number>, s) => {
-                  acc[s.stat] = s.value;
-                  return acc;
-                },
-                {}
-              );
-
-              return (
-                (!params.search ||
-                  pokemon.name
-                    .toLowerCase()
-                    .includes(params.search.toLowerCase())) &&
-                (!params.types?.length ||
-                  params.types.every((t) => pokemon.types.includes(t))) &&
-                (!params.abilities?.length ||
-                  params.abilities.every((a) =>
-                    pokemon.abilities.includes(a)
-                  )) &&
-                (!params.generation ||
-                  pokemon.generation === params.generation) &&
-                (!params.stats?.length ||
-                  params.stats.every(
-                    (filter) =>
-                      (!filter.min || statMap[filter.stat] >= filter.min) &&
-                      (!filter.max || statMap[filter.stat] <= filter.max)
-                  ))
-              );
-            }),
+      const filteredPokemon = allPokemon.filter((pokemon) => {
+        const statMap = pokemon.stats.reduce(
+          (acc: Record<string, number>, s) => {
+            acc[s.stat] = s.value;
+            return acc;
           },
-        ],
-      };
+          {}
+        );
+
+        return (
+          (!params.search ||
+            pokemon.name.toLowerCase().includes(params.search.toLowerCase())) &&
+          (!params.types?.length ||
+            params.types.every((t) => pokemon.types.includes(t))) &&
+          (!params.abilities?.length ||
+            params.abilities.every((a) => pokemon.abilities.includes(a))) &&
+          (!params.generation || pokemon.generation === params.generation) &&
+          (!params.stats?.length ||
+            params.stats.every(
+              (filter) =>
+                (!filter.min || statMap[filter.stat] >= filter.min) &&
+                (!filter.max || statMap[filter.stat] <= filter.max)
+            ))
+        );
+      });
+
+      // If no results after filtering, return `null` to trigger a refetch
+      return filteredPokemon.length > 0
+        ? { ...data, pages: [{ results: filteredPokemon }] }
+        : null;
     },
   });
+
+  return {
+    ...query,
+    refetch: query.refetch, // Expose refetch to trigger manually
+  };
 };
 
 // Fetch Individual Pokemon Details
@@ -325,3 +324,12 @@ export const usePokemonTypeEffectiveness = () => {
     staleTime: Infinity,
   });
 };
+
+/**
+ * Senario 1
+ *
+ * If there are already cached Pokemon (e.g., 30 Pokemon stored), first apply filters to that cached data.
+ * If no results are found in the cached data, trigger a fresh refetch from the API instead of showing "No Pokemon found."
+ * If some Pokemon are found in the cache, allow infinite scrolling to load the next set of results.
+ * If after all the fetch nothing is found then show "Not found message"
+ */
