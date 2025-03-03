@@ -25,12 +25,12 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
   return (
     <div className={cn("relative w-full", className)}>
-      <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+      <Search className="text-muted-foreground absolute top-1/2 left-4 size-4 -translate-y-1/2" />
       <Input
         value={value}
         onChange={handleInputChange}
         placeholder={placeholder}
-        className="w-full pl-10"
+        className="h-11 w-full pl-11"
         type="search"
       />
     </div>

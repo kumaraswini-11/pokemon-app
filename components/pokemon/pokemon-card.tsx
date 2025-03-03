@@ -153,11 +153,11 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
             </div>
           </CardContent>
 
-          <CardFooter className="p-3 pt-1">
+          <CardFooter className="px-3 pt-2">
             <Button
               variant="secondary"
               size="sm"
-              className="h-8 w-full border text-xs hover:opacity-75"
+              className="h-9 w-full border text-xs hover:opacity-75"
               onClick={handleAddToTeam}
             >
               <PlusCircle className="mr-1 size-3.5" />

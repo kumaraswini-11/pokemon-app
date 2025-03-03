@@ -9,6 +9,7 @@ import {
 import { PokemonGrid } from "@/components/pokemon/pokemon-grid";
 import { SearchInput } from "@/components/pokemon/pokemon-search-input";
 import { ITEMS_PER_PAGE } from "@/constants";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function HomePage() {
   const [filterState, setFilterState] = useState<FilterState>({
@@ -40,31 +41,55 @@ export default function HomePage() {
   );
 
   return (
-    <>
-      {/* Filters Sidebar */}
-      <aside className="w-1/4 min-w-[300px]">
-        <PokemonFilters
-          filterState={filterState}
-          setFilterState={setFilterState}
+    <div className="flex h-screen w-full flex-col gap-2 overflow-hidden px-2 py-1">
+      {/* Top search bar with mobile filter button - fixed */}
+      <div className="flex items-center gap-2">
+        <SearchInput
+          value={filterState.search}
+          onChange={(value) =>
+            setFilterState({ ...filterState, search: value })
+          }
+          className="flex-1"
         />
-      </aside>
+        {/* Mobile filter button - only visible on small screens */}
+        {/* <MobileViewFilters /> */}
+      </div>
 
-      {/* Main Section with Fixed Search and Scrollable Grid */}
-      <main className="flex w-3/4 flex-col">
-        <div className="mb-4">
-          <SearchInput
-            value={filterState.search}
-            onChange={(value) =>
-              setFilterState({ ...filterState, search: value })
-            }
+      {/* Main content area */}
+      <div className="flex flex-1 gap-2 overflow-hidden">
+        {/* Desktop filters - hidden on mobile - fixed */}
+        <ScrollArea className="hidden w-auto md:block">
+          <PokemonFilters
+            filterState={filterState}
+            setFilterState={setFilterState}
           />
-        </div>
+        </ScrollArea>
 
-        {/* Scrollable Grid */}
-        <section className="h-[calc(100vh-9rem)] overflow-y-auto">
+        {/* Pokemon grid - scrollable */}
+        <ScrollArea className="w-full">
           <PokemonGrid params={params} />
-        </section>
-      </main>
-    </>
+        </ScrollArea>
+      </div>
+    </div>
   );
 }
+
+// export const MobileViewFilters = () => {
+//   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+//   return (
+//     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+//       <SheetTrigger asChild>
+//         <Button variant="outline" size="icon" className="md:hidden">
+//           <FilterIcon className="size-4" />
+//         </Button>
+//       </SheetTrigger>
+//       <SheetContent side="left" className="w-[24rem] p-0 sm:w-[350px]">
+//         <SheetHeader className="px-4 pt-4">
+//           <SheetTitle>Pokemon Filters</SheetTitle>
+//           <SheetDescription>Fine-tune your Pokemon search</SheetDescription>
+//         </SheetHeader>
+//       </SheetContent>
+//     </Sheet>
+//   );
+// };

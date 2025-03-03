@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useCallback, useMemo, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { Info, RefreshCw } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +31,12 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 export interface StatFilter {
   stat: string;
@@ -49,6 +57,7 @@ export interface PokemonFiltersProps {
   setFilterState: (state: FilterState) => void;
   isLoading?: boolean;
   setIsLoading?: (loading: boolean) => void;
+  className?: string;
 }
 
 const DEFAULT_STATS: StatFilter[] = POKEMON_BASE_STATS.map(({ key }) => ({
@@ -72,6 +81,7 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
   filterState,
   setFilterState,
   isLoading = false,
+  className,
 }) => {
   const [isResetting, setIsResetting] = useState(false);
 
@@ -273,11 +283,28 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
   );
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="px-4 pb-0">
+    <Card className={cn("rounded-m w-full min-w-[22rem]", className)}>
+      <CardHeader className="px-4 py-0">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg">Pokemon Filters</CardTitle>
+          <div className="flex flex-col">
+            <CardTitle className="flex items-center justify-start gap-1.5 text-lg">
+              <span>Pokemon Filters</span>
+
+              {/* Tooltip  */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="text-muted-foreground mt-1 size-3.5 cursor-pointer" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      We currently only support filtering on desktop. Mobile
+                      filtering coming soon!
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </CardTitle>
             <CardDescription>Fine-tune your Pokemon search</CardDescription>
           </div>
           <Button
@@ -295,8 +322,8 @@ export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
         </div>
       </CardHeader>
       <Separator />
-      <CardContent className="px-4 pt-0">
-        <div className="space-y-4">
+      <CardContent className="px-4 py-0">
+        <div className="space-y-2.5">
           <GenerationFilter />
           <TypeFilter />
           <AbilityFilter />

@@ -27,12 +27,10 @@ export function Navbar() {
 
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <div className="container ml-2 flex h-14 items-center justify-between">
+      <div className="flex h-14 items-center justify-between px-4">
         <SiteBranding />
 
         <nav className="flex items-center space-x-1 md:space-x-2 lg:space-x-4">
-          <ThemeSwitcher />
-
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -57,6 +55,8 @@ export function Navbar() {
               </Button>
             );
           })}
+
+          <ThemeSwitcher />
         </nav>
       </div>
     </header>
