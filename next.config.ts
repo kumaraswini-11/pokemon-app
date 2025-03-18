@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   experimental: {
     // staleTimes is an experimental feature that enables caching of page segments in the client-side router cache. For more deatil: https://nextjs.org/docs/app/building-your-application/caching#client-side-router-cache
     // staleTimes: { dynamic: 30 }, // 30 seconds
+    // viewTransition: true,
   },
 
   // If a dependency is using Node.js specific features, you can choose to opt-out specific dependencies from the Server Components bundling and use native Node.js require.

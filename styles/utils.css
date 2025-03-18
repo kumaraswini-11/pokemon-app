@@ -1,0 +1,19 @@
+@layer utilities {
+  .bg-grid {
+    background-color: #f9fafb;
+    background-image:
+      linear-gradient(rgba(8, 9, 10, 0.116) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(24, 23, 26, 0.858) 1px, transparent 1px);
+    background-size: 9px 9px; /* Grid size */
+    mask-image: radial-gradient(
+      ellipse 80% 60% at center,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 60% at center,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}

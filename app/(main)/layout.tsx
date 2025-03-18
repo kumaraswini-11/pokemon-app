@@ -8,7 +8,9 @@ export default function MainLayout({
   return (
     <>
       <Navbar />
-      <div className="flex flex-1 flex-row gap-4 p-2">{children}</div>
+      <div className="flex flex-1 flex-row gap-4 overflow-hidden p-2">
+        {children}
+      </div>
     </>
   );
 }
