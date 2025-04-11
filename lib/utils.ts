@@ -16,3 +16,11 @@ export const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+export const axiosInstance = axios.create({
+  baseURL: `${process.env.NEXT_PUBLIC_APP_URL}/api`,
+  timeout: 5 * 1000, // 5 seconds timeout
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
