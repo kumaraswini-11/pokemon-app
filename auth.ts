@@ -7,6 +7,7 @@ import Google from "next-auth/providers/google";
 import { db } from "./db/drizzle";
 import { usersTable } from "./db/schema";
 import { signInFormSchema } from "./schemas";
+// import { verifyPassword } from "./lib/password-utils";
 
 /**
  * Configure authentication providers
@@ -59,7 +60,10 @@ const providers: Provider[] = [
         }
 
         // // Verify the password
-        // const isPasswordValid = await verifyPassword(password, user.passwordHash);
+        // const isPasswordValid = await verifyPassword(
+        //   password,
+        //   user.passwordHash
+        // );
         // if (!isPasswordValid) throw new Error("Invalid credentials.");
 
         // return user object with their profile data
@@ -127,6 +131,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.email, profile.email),
           });
+
+          // console.log("googel exits :: ", existingUser);
 
           // If not, create a new user (worsks for both signin and signup)
           if (!existingUser && profile.email) {

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { PokemonListParams } from "@/types";
 import { PokemonCardSkeleton } from "./pokemon-card-skeleton";
 import { PokemonCard } from "./pokemon-card";
-import { Loader } from "../loader";
+import { Loader } from "../shared/loader";
 import useDebounce from "@/hooks/use-debounce";
 import { DEBOUNCE_DELAY } from "@/constants";
 

@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
 export interface PokemonListParams {
   search?: string;
   types?: string[];
@@ -116,4 +118,18 @@ export interface PokemonItemProps {
   pokemon: PokemonInTeam;
   teamId: string;
   teamName: string;
+}
+
+export interface User {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user: any;
+}
+
+export interface Icon {
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>> | LucideIcon;
+}
+
+export interface NavItem extends Icon {
+  title: string;
+  url: string;
 }

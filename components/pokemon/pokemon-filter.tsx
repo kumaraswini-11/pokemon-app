@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MultiSelect } from "@/components/multi-select";
+import { MultiSelect } from "@/components/shared/multi-select";
 import { getTypeColor, POKEMON_BASE_STATS } from "@/constants";
 import {
   usePokemonGenerations,

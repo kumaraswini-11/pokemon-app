@@ -8,6 +8,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const getInitials = (name?: string): string => {
+  if (!name) return "";
+  const nameParts = name.split(" ");
+  return `${nameParts[0]?.[0] || ""}${nameParts[1]?.[0] || ""}`.toUpperCase();
+};
+
 // Base configuration for API requests
 export const api = axios.create({
   baseURL: POKEMON_API_BASE_URL,

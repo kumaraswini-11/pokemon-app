@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/navbar";
+import { Header } from "@/components/header";
 
 export default function MainLayout({
   children,
@@ -7,7 +7,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <Navbar />
+      <Header />
       <div className="flex flex-1 flex-row gap-4 overflow-hidden p-2">
         {children}
       </div>

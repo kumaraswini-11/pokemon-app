@@ -29,7 +29,7 @@ import {
 import { PokemonData } from "@/types";
 import { getTypeColor, POKEMON_IMAGE_BASE_URL } from "@/constants";
 import { cn } from "@/lib/utils";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/shared/loader";
 
 interface ComparisonPokemon {
   id: string;

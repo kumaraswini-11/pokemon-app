@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { usePokemonTypeEffectiveness } from "@/hooks/use-pokemon-queries";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Loader } from "@/components/loader";
+import { Loader } from "@/components/shared/loader";
 import {
   Tooltip,
   TooltipContent,
