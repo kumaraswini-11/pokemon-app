@@ -1,5 +1,5 @@
-import { Card, CardContent, CardFooter } from "../ui/card";
-import { Skeleton } from "../ui/skeleton";
+import {Card, CardContent, CardFooter} from "../ui/card";
+import {Skeleton} from "../ui/skeleton";
 
 export const PokemonDetailsSkeleton = () => (
   <div className="container mx-auto max-w-5xl px-4 py-6">

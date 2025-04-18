@@ -1,7 +1,8 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { MAX_POKEMON_PER_TEAM } from "@/constants";
-import { PokemonInTeam, Team, TypeEffectiveness } from "@/types";
+import {create} from "zustand";
+import {persist} from "zustand/middleware";
+
+import {MAX_POKEMON_PER_TEAM} from "@/constants";
+import {PokemonInTeam, Team, TypeEffectiveness} from "@/types";
 
 type TeamStore = {
   teams: Team[];
@@ -10,11 +11,7 @@ type TeamStore = {
   addPokemonToTeam: (teamId: string, pokemon: PokemonInTeam) => void;
   removePokemonFromTeam: (teamId: string, pokemonId: number) => void;
   updateTeamName: (teamId: string, name: string) => void;
-  reorderPokemonInTeam: (
-    teamId: string,
-    startIndex: number,
-    endIndex: number
-  ) => void;
+  reorderPokemonInTeam: (teamId: string, startIndex: number, endIndex: number) => void;
 };
 
 export const useTeamStore = create<TeamStore>()(
@@ -25,83 +22,67 @@ export const useTeamStore = create<TeamStore>()(
         if (!name?.trim()) throw new Error("Team name cannot be empty");
         const trimmedName = name.trim();
         const teams = get().teams;
-        if (
-          teams.some(
-            (team) => team.name.toLowerCase() === trimmedName.toLowerCase()
-          )
-        ) {
+        if (teams.some(team => team.name.toLowerCase() === trimmedName.toLowerCase())) {
           throw new Error(`A team named "${trimmedName}" already exists`);
         }
         const id = crypto.randomUUID();
-        set((state) => ({
-          teams: [...state.teams, { id, name: trimmedName, members: [] }],
+        set(state => ({
+          teams: [...state.teams, {id, name: trimmedName, members: []}],
         }));
         return id;
       },
 
       deleteTeam: (id: string) =>
-        set((state) => ({
-          teams: state.teams.filter((team) => team.id !== id),
+        set(state => ({
+          teams: state.teams.filter(team => team.id !== id),
         })),
 
       addPokemonToTeam: (teamId: string, pokemon: PokemonInTeam) =>
-        set((state) => {
-          const team = state.teams.find((t) => t.id === teamId);
+        set(state => {
+          const team = state.teams.find(t => t.id === teamId);
           if (!team) return state;
           if (team.members.length >= MAX_POKEMON_PER_TEAM) return state;
           if (!pokemon?.types?.length) return state;
-          if (team.members.some((p) => p.id === pokemon.id)) return state;
+          if (team.members.some(p => p.id === pokemon.id)) return state;
           return {
-            teams: state.teams.map((t) =>
-              t.id === teamId ? { ...t, members: [...t.members, pokemon] } : t
+            teams: state.teams.map(t =>
+              t.id === teamId ? {...t, members: [...t.members, pokemon]} : t
             ),
           };
         }),
 
       removePokemonFromTeam: (teamId: string, pokemonId: number) =>
-        set((state) => {
-          const team = state.teams.find((t) => t.id === teamId);
+        set(state => {
+          const team = state.teams.find(t => t.id === teamId);
           if (!team) return state;
           return {
-            teams: state.teams.map((t) =>
-              t.id === teamId
-                ? { ...t, members: t.members.filter((p) => p.id !== pokemonId) }
-                : t
+            teams: state.teams.map(t =>
+              t.id === teamId ? {...t, members: t.members.filter(p => p.id !== pokemonId)} : t
             ),
           };
         }),
 
       updateTeamName: (teamId: string, name: string) =>
-        set((state) => {
+        set(state => {
           if (!name?.trim()) return state;
           const trimmedName = name.trim();
           const teams = state.teams;
-          const teamToUpdate = teams.find((t) => t.id === teamId);
+          const teamToUpdate = teams.find(t => t.id === teamId);
           if (!teamToUpdate) return state;
           if (teamToUpdate.name === trimmedName) return state; // No change needed
           if (
-            teams.some(
-              (t) =>
-                t.id !== teamId &&
-                t.name.toLowerCase() === trimmedName.toLowerCase()
-            )
+            teams.some(t => t.id !== teamId && t.name.toLowerCase() === trimmedName.toLowerCase())
           ) {
             throw new Error(`A team named "${trimmedName}" already exists`);
           }
           return {
-            teams: state.teams.map((t) =>
-              t.id === teamId ? { ...t, name: trimmedName } : t
-            ),
+            teams: state.teams.map(t => (t.id === teamId ? {...t, name: trimmedName} : t)),
           };
         }),
 
-      reorderPokemonInTeam: (
-        teamId: string,
-        startIndex: number,
-        endIndex: number
-      ) =>
-        set((state) => {
-          const team = state.teams.find((t) => t.id === teamId);
+      reorderPokemonInTeam: (teamId: string, startIndex: number, endIndex: number) =>
+        set(state => {
+          const team = state.teams.find(t => t.id === teamId);
           if (!team) return state;
           if (
             startIndex < 0 ||
@@ -115,24 +96,19 @@ export const useTeamStore = create<TeamStore>()(
           const [reorderedItem] = newMembers.splice(startIndex, 1);
           newMembers.splice(endIndex, 0, reorderedItem);
           return {
-            teams: state.teams.map((t) =>
-              t.id === teamId ? { ...t, members: newMembers } : t
-            ),
+            teams: state.teams.map(t => (t.id === teamId ? {...t, members: newMembers} : t)),
           };
         }),
     }),
     {
       name: "team-storage",
       version: 1,
-      partialize: (state) => ({ teams: state.teams }),
+      partialize: state => ({teams: state.teams}),
     }
   )
 );
 
-export const analyzeTeam = (
-  team: Team,
-  typeEffectiveness: Record<string, TypeEffectiveness>
-) => {
+export const analyzeTeam = (team: Team, typeEffectiveness: Record<string, TypeEffectiveness>) => {
   const typeCoverage: Record<string, number> = {};
   const weaknesses: Record<string, number> = {};
   const resistances: Record<string, number> = {};
@@ -148,19 +124,19 @@ export const analyzeTeam = (
     };
   }
 
-  team.members.forEach((pokemon) => {
-    pokemon.types.forEach((type) => {
+  team.members.forEach(pokemon => {
+    pokemon.types.forEach(type => {
       const typeData = typeEffectiveness[type] || {};
-      typeData.double_damage_to?.forEach((targetType) => {
+      typeData.double_damage_to?.forEach(targetType => {
         typeCoverage[targetType] = (typeCoverage[targetType] || 0) + 1;
       });
-      typeData.double_damage_from?.forEach((weakType) => {
+      typeData.double_damage_from?.forEach(weakType => {
         weaknesses[weakType] = (weaknesses[weakType] || 0) + 1;
       });
-      typeData.half_damage_from?.forEach((resistType) => {
+      typeData.half_damage_from?.forEach(resistType => {
         resistances[resistType] = (resistances[resistType] || 0) + 1;
       });
-      typeData.no_damage_from?.forEach((immuneType) => {
+      typeData.no_damage_from?.forEach(immuneType => {
         immunities[immuneType] = (immunities[immuneType] || 0) + 1;
       });
     });
@@ -169,7 +145,7 @@ export const analyzeTeam = (
   const toList = (obj: Record<string, number>) =>
     Object.entries(obj)
       .filter(([, count]) => count > 0)
-      .map(([type, count]) => ({ type, count }));
+      .map(([type, count]) => ({type, count}));
 
   const coverageList = toList(typeCoverage);
   const weaknessList = toList(weaknesses);
@@ -177,10 +153,7 @@ export const analyzeTeam = (
   const immunityList = toList(immunities);
 
   const score =
-    coverageList.length -
-    weaknessList.length +
-    resistanceList.length * 0.5 +
-    immunityList.length;
+    coverageList.length - weaknessList.length + resistanceList.length * 0.5 + immunityList.length;
 
   return {
     typeCoverage: coverageList,

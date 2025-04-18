@@ -1,10 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowLeftRight } from "lucide-react";
 import Image from "next/image";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
+import React, {useState} from "react";
 
+import {ArrowLeftRight} from "lucide-react";
+import {Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis} from "recharts";
+
+import {Loader} from "@/components/shared/loader";
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
+import {Card} from "@/components/ui/card";
+import {ChartContainer, ChartTooltip, ChartTooltipContent} from "@/components/ui/chart";
 import {
   Select,
   SelectContent,
@@ -12,24 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {POKEMON_IMAGE_BASE_URL, getTypeColor} from "@/constants";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  usePokemonList,
   usePokemonDetails,
+  usePokemonList,
   usePokemonTypeEffectiveness,
 } from "@/hooks/use-pokemon-queries";
-import { PokemonData } from "@/types";
-import { getTypeColor, POKEMON_IMAGE_BASE_URL } from "@/constants";
-import { cn } from "@/lib/utils";
-import { Loader } from "@/components/shared/loader";
+import {cn} from "@/lib/utils";
+import {PokemonData} from "@/types";
 
 interface ComparisonPokemon {
   id: string;
@@ -38,9 +35,9 @@ interface ComparisonPokemon {
 
 // Chart Config
 const chartConfig = {
-  left: { label: "Left Pokemon", color: "hsl(var(--chart-1))" },
-  right: { label: "Right Pokemon", color: "hsl(var(--chart-2))" },
-} satisfies Record<string, { label: string; color: string }>;
+  left: {label: "Left Pokemon", color: "hsl(var(--chart-1))"},
+  right: {label: "Right Pokemon", color: "hsl(var(--chart-2))"},
+} satisfies Record<string, {label: string; color: string}>;
 
 const PokemonSelector = ({
   side,
@@ -51,17 +48,19 @@ const PokemonSelector = ({
   side: "left" | "right";
   value: string;
   onChange: (side: "left" | "right", value: string) => void;
-  options: { id: number; name: string }[];
+  options: {id: number; name: string}[];
 }) => (
-  <Select value={value} onValueChange={(val) => onChange(side, val)}>
+  <Select
+    value={value}
+    onValueChange={val => onChange(side, val)}>
     <SelectTrigger className="w-40 text-sm">
-      <SelectValue
-        placeholder={`${side === "left" ? "Left" : "Right"} Pokemon`}
-      />
+      <SelectValue placeholder={`${side === "left" ? "Left" : "Right"} Pokemon`} />
     </SelectTrigger>
     <SelectContent>
-      {options.map((pokemon) => (
-        <SelectItem key={pokemon.id} value={pokemon.id.toString()}>
+      {options.map(pokemon => (
+        <SelectItem
+          key={pokemon.id}
+          value={pokemon.id.toString()}>
           {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
         </SelectItem>
       ))}
@@ -69,13 +68,9 @@ const PokemonSelector = ({
   </Select>
 );
 
-const AbilitiesDisplay = ({
-  abilities,
-}: {
-  abilities: PokemonData["abilities"];
-}) => (
+const AbilitiesDisplay = ({abilities}: {abilities: PokemonData["abilities"]}) => (
   <div className="text-xs text-gray-600">
-    {abilities.map((ability) => (
+    {abilities.map(ability => (
       <p key={ability.name}>
         {ability.name.charAt(0).toUpperCase() + ability.name.slice(1)}
         {ability.hidden && <span className="ml-1 text-gray-400">(Hidden)</span>}
@@ -113,11 +108,10 @@ const PokemonPreview = ({
           {data.name.charAt(0).toUpperCase() + data.name.slice(1)} #{data.id}
         </h2>
         <div className="flex justify-center gap-1">
-          {data.types.map((type) => (
+          {data.types.map(type => (
             <Badge
               key={type}
-              className={cn(getTypeColor(type), "text-foreground text-xs")}
-            >
+              className={cn(getTypeColor(type), "text-foreground text-xs")}>
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </Badge>
           ))}
@@ -138,54 +132,61 @@ const PokemonPreview = ({
   </Card>
 );
 
-const StatComparison = ({
-  left,
-  right,
-}: {
-  left: PokemonData;
-  right: PokemonData;
-}) => {
+const StatComparison = ({left, right}: {left: PokemonData; right: PokemonData}) => {
   const data = [
     {
       name: "HP",
-      left: left.stats.find((s) => s.stat === "hp")?.value || 0,
-      right: right.stats.find((s) => s.stat === "hp")?.value || 0,
+      left: left.stats.find(s => s.stat === "hp")?.value || 0,
+      right: right.stats.find(s => s.stat === "hp")?.value || 0,
     },
     {
       name: "Attack",
-      left: left.stats.find((s) => s.stat === "attack")?.value || 0,
-      right: right.stats.find((s) => s.stat === "attack")?.value || 0,
+      left: left.stats.find(s => s.stat === "attack")?.value || 0,
+      right: right.stats.find(s => s.stat === "attack")?.value || 0,
     },
     {
       name: "Defense",
-      left: left.stats.find((s) => s.stat === "defense")?.value || 0,
-      right: right.stats.find((s) => s.stat === "defense")?.value || 0,
+      left: left.stats.find(s => s.stat === "defense")?.value || 0,
+      right: right.stats.find(s => s.stat === "defense")?.value || 0,
     },
     {
       name: "Sp. Atk",
-      left: left.stats.find((s) => s.stat === "special-attack")?.value || 0,
-      right: right.stats.find((s) => s.stat === "special-attack")?.value || 0,
+      left: left.stats.find(s => s.stat === "special-attack")?.value || 0,
+      right: right.stats.find(s => s.stat === "special-attack")?.value || 0,
     },
     {
       name: "Sp. Def",
-      left: left.stats.find((s) => s.stat === "special-defense")?.value || 0,
-      right: right.stats.find((s) => s.stat === "special-defense")?.value || 0,
+      left: left.stats.find(s => s.stat === "special-defense")?.value || 0,
+      right: right.stats.find(s => s.stat === "special-defense")?.value || 0,
     },
     {
       name: "Speed",
-      left: left.stats.find((s) => s.stat === "speed")?.value || 0,
-      right: right.stats.find((s) => s.stat === "speed")?.value || 0,
+      left: left.stats.find(s => s.stat === "speed")?.value || 0,
+      right: right.stats.find(s => s.stat === "speed")?.value || 0,
     },
   ];
 
   return (
-    <ChartContainer config={chartConfig} className="h-[300px]">
-      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-        <YAxis domain={[0, 255]} tick={{ fontSize: 12 }} />
+    <ChartContainer
+      config={chartConfig}
+      className="h-[300px]">
+      <BarChart
+        data={data}
+        margin={{top: 10, right: 10, left: 0, bottom: 0}}>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="#e5e7eb"
+        />
+        <XAxis
+          dataKey="name"
+          tick={{fontSize: 12}}
+        />
+        <YAxis
+          domain={[0, 255]}
+          tick={{fontSize: 12}}
+        />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Legend wrapperStyle={{ fontSize: "12px" }} />
+        <Legend wrapperStyle={{fontSize: "12px"}} />
         <Bar
           dataKey="left"
           name={left.name}
@@ -216,16 +217,13 @@ const TypeEffectivenessComparison = ({
   isTypeLoading: boolean;
   typeError: any;
 }) => {
-  const calculateEffectiveness = (
-    attackerTypes: string[],
-    defenderTypes: string[]
-  ) => {
+  const calculateEffectiveness = (attackerTypes: string[], defenderTypes: string[]) => {
     if (!typeEffectiveness) return 1;
     let total = 1;
-    attackerTypes.forEach((atkType) => {
+    attackerTypes.forEach(atkType => {
       const typeData = typeEffectiveness[atkType];
       if (!typeData) return;
-      defenderTypes.forEach((defType) => {
+      defenderTypes.forEach(defType => {
         if (typeData.double_damage_to.includes(defType)) total *= 2;
         else if (typeData.half_damage_to.includes(defType)) total *= 0.5;
         else if (typeData.no_damage_to.includes(defType)) total *= 0;
@@ -235,10 +233,7 @@ const TypeEffectivenessComparison = ({
   };
 
   if (isTypeLoading) return <Loader message="Loading type data..." />;
-  if (typeError)
-    return (
-      <div className="text-center text-red-500">Error loading type data</div>
-    );
+  if (typeError) return <div className="text-center text-red-500">Error loading type data</div>;
 
   const leftVsRight = calculateEffectiveness(left.types, right.types);
   const rightVsLeft = calculateEffectiveness(right.types, left.types);
@@ -257,38 +252,32 @@ const TypeEffectivenessComparison = ({
     <div className="rounded-md border bg-white p-4 shadow-md">
       {/* Info Section for New Users */}
       <div className="mb-4 rounded-md bg-gray-100 p-3">
-        <h2 className="text-md font-bold text-gray-800">
-          How Type Effectiveness Works
-        </h2>
+        <h2 className="text-md font-bold text-gray-800">How Type Effectiveness Works</h2>
         <p className="text-sm text-gray-700">
-          Every Pokemon has **one or two types** (e.g., Charizard is
-          Fire/Flying). Some types are **stronger** or **weaker** against
-          others. Damage is multiplied based on these interactions:
+          Every Pokemon has **one or two types** (e.g., Charizard is Fire/Flying). Some types are
+          **stronger** or **weaker** against others. Damage is multiplied based on these
+          interactions:
         </p>
         <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
           <li>
-            <span className="font-bold text-green-600">
-              2x (Super Effective)
-            </span>
-            : If the attack type is strong against the defender.
+            <span className="font-bold text-green-600">2x (Super Effective)</span>: If the attack
+            type is strong against the defender.
           </li>
           <li>
-            <span className="font-bold text-gray-600">1x (Normal)</span>: No
-            special advantage.
+            <span className="font-bold text-gray-600">1x (Normal)</span>: No special advantage.
           </li>
           <li>
-            <span className="font-bold text-red-600">0.5x (Resisted)</span>: If
-            the defender resists the attack.
+            <span className="font-bold text-red-600">0.5x (Resisted)</span>: If the defender resists
+            the attack.
           </li>
           <li>
-            <span className="font-bold text-gray-500">0x (No Effect)</span>: If
-            the attack has no effect (e.g., Normal vs. Ghost).
+            <span className="font-bold text-gray-500">0x (No Effect)</span>: If the attack has no
+            effect (e.g., Normal vs. Ghost).
           </li>
         </ul>
         <p className="mt-2 text-sm text-gray-700">
-          If a Pokemon has **two types**, the multipliers **stack**. Example: A
-          **Fire/Flying Pokemon** (like Charizard) takes **4x damage from Rock
-          moves** because:
+          If a Pokemon has **two types**, the multipliers **stack**. Example: A **Fire/Flying
+          Pokemon** (like Charizard) takes **4x damage from Rock moves** because:
         </p>
         <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
           <li>Fire takes **2x** from Rock</li>
@@ -307,18 +296,15 @@ const TypeEffectivenessComparison = ({
         <div className="flex flex-col items-center space-y-2">
           <h3 className="text-lg font-semibold text-gray-800">{left.name}</h3>
           <div className="flex gap-2">
-            {left.types.map((type) => (
+            {left.types.map(type => (
               <Badge
                 key={type}
-                className={cn(getTypeColor(type), "px-2 py-1 text-xs")}
-              >
+                className={cn(getTypeColor(type), "px-2 py-1 text-xs")}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </Badge>
             ))}
           </div>
-          <p
-            className={cn("text-lg font-bold", effectivenessColor(leftVsRight))}
-          >
+          <p className={cn("text-lg font-bold", effectivenessColor(leftVsRight))}>
             {leftVsRight}x - {getEffectivenessLabel(leftVsRight)}
           </p>
         </div>
@@ -327,18 +313,15 @@ const TypeEffectivenessComparison = ({
         <div className="flex flex-col items-center space-y-2">
           <h3 className="text-lg font-semibold text-gray-800">{right.name}</h3>
           <div className="flex gap-2">
-            {right.types.map((type) => (
+            {right.types.map(type => (
               <Badge
                 key={type}
-                className={cn(getTypeColor(type), "px-2 py-1 text-xs")}
-              >
+                className={cn(getTypeColor(type), "px-2 py-1 text-xs")}>
                 {type.charAt(0).toUpperCase() + type.slice(1)}
               </Badge>
             ))}
           </div>
-          <p
-            className={cn("text-lg font-bold", effectivenessColor(rightVsLeft))}
-          >
+          <p className={cn("text-lg font-bold", effectivenessColor(rightVsLeft))}>
             {rightVsLeft}x - {getEffectivenessLabel(rightVsLeft)}
           </p>
         </div>
@@ -347,49 +330,36 @@ const TypeEffectivenessComparison = ({
       {/* Conclusion */}
       <div className="mt-4 text-center">
         {leftVsRight > rightVsLeft ? (
-          <p className="text-lg font-semibold text-green-600">
-            {left.name} has the advantage! 🚀
-          </p>
+          <p className="text-lg font-semibold text-green-600">{left.name} has the advantage! 🚀</p>
         ) : rightVsLeft > leftVsRight ? (
-          <p className="text-lg font-semibold text-green-600">
-            {right.name} has the advantage! 🚀
-          </p>
+          <p className="text-lg font-semibold text-green-600">{right.name} has the advantage! 🚀</p>
         ) : (
-          <p className="text-lg font-semibold text-gray-600">
-            It&apos;s an even matchup! ⚖️
-          </p>
+          <p className="text-lg font-semibold text-gray-600">It&apos;s an even matchup! ⚖️</p>
         )}
       </div>
     </div>
   );
 };
 
-const MovePoolAnalysis = ({
-  left,
-  right,
-}: {
-  left: PokemonData;
-  right: PokemonData;
-}) => (
+const MovePoolAnalysis = ({left, right}: {left: PokemonData; right: PokemonData}) => (
   <div className="grid grid-cols-2 gap-4">
-    {[left, right].map((pokemon) => (
-      <div key={pokemon.id} className="space-y-2">
+    {[left, right].map(pokemon => (
+      <div
+        key={pokemon.id}
+        className="space-y-2">
         <h3 className="text-sm font-semibold text-gray-800">
           {pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}
         </h3>
         <div className="max-h-48 space-y-2 overflow-y-auto px-2">
-          {pokemon.moves.map((move) => (
-            <Card key={move.name} className="p-2">
+          {pokemon.moves.map(move => (
+            <Card
+              key={move.name}
+              className="p-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium">
                   {move.name.charAt(0).toUpperCase() + move.name.slice(1)}
                 </span>
-                <Badge
-                  className={cn(
-                    getTypeColor(move.type),
-                    "text-foreground text-xs"
-                  )}
-                >
+                <Badge className={cn(getTypeColor(move.type), "text-foreground text-xs")}>
                   {move.type.charAt(0).toUpperCase() + move.type.slice(1)}
                 </Badge>
               </div>
@@ -409,14 +379,12 @@ export default function PokemonComparison() {
     left: ComparisonPokemon;
     right: ComparisonPokemon;
   }>({
-    left: { id: "", name: null },
-    right: { id: "", name: null },
+    left: {id: "", name: null},
+    right: {id: "", name: null},
   });
-  const [activeTab, setActiveTab] = useState<"stats" | "types" | "moves">(
-    "stats"
-  );
+  const [activeTab, setActiveTab] = useState<"stats" | "types" | "moves">("stats");
 
-  const { data: pokemonListData, isLoading: isListLoading } = usePokemonList({
+  const {data: pokemonListData, isLoading: isListLoading} = usePokemonList({
     limit: 50,
   });
   const {
@@ -435,14 +403,13 @@ export default function PokemonComparison() {
     error: typeError,
   } = usePokemonTypeEffectiveness();
 
-  const pokemonList =
-    pokemonListData?.pages.flatMap((page) => page.results) || [];
+  const pokemonList = pokemonListData?.pages.flatMap(page => page.results) || [];
 
   const handlePokemonChange = (side: "left" | "right", pokemonId: string) => {
-    const selected = pokemonList.find((p) => p.id.toString() === pokemonId);
-    setSelectedPokemon((prev) => ({
+    const selected = pokemonList.find(p => p.id.toString() === pokemonId);
+    setSelectedPokemon(prev => ({
       ...prev,
-      [side]: { id: pokemonId, name: selected?.name || null },
+      [side]: {id: pokemonId, name: selected?.name || null},
     }));
   };
 
@@ -457,9 +424,7 @@ export default function PokemonComparison() {
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">
-      <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">
-        Pokemon Comparison
-      </h1>
+      <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Pokemon Comparison</h1>
 
       {/* Selection Controls */}
       <div className="mb-6 flex items-center justify-center gap-4">
@@ -474,8 +439,7 @@ export default function PokemonComparison() {
           size="icon"
           onClick={handleSwapPositions}
           aria-label="Swap Pokemon positions"
-          className="rounded-full"
-        >
+          className="rounded-full">
           <ArrowLeftRight size={16} />
         </Button>
         <PokemonSelector
@@ -508,16 +472,21 @@ export default function PokemonComparison() {
           <Card className="p-4">
             <Tabs
               value={activeTab}
-              onValueChange={(val) => setActiveTab(val as typeof activeTab)}
-            >
+              onValueChange={val => setActiveTab(val as typeof activeTab)}>
               <TabsList className="mb-4 grid w-full grid-cols-3">
-                <TabsTrigger value="stats" className="text-sm">
+                <TabsTrigger
+                  value="stats"
+                  className="text-sm">
                   Stats
                 </TabsTrigger>
-                <TabsTrigger value="types" className="text-sm">
+                <TabsTrigger
+                  value="types"
+                  className="text-sm">
                   Types
                 </TabsTrigger>
-                <TabsTrigger value="moves" className="text-sm">
+                <TabsTrigger
+                  value="moves"
+                  className="text-sm">
                   Moves
                 </TabsTrigger>
               </TabsList>

@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
-import { Inter, Poppins, JetBrains_Mono } from "next/font/google";
+import type {Metadata} from "next";
+import {Inter, JetBrains_Mono, Poppins} from "next/font/google";
+
+import {ThemeProvider} from "next-themes";
 
 import Providers from "@/components/providers";
-import { Toaster } from "@/components/ui/sonner";
+import {Toaster} from "@/components/ui/sonner";
+
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,15 +37,9 @@ export const metadata: Metadata = {
   },
   description:
     "Explore Pokemon, build teams, and analyze Pokemon statistics with our comprehensive Pokedex application.",
-  keywords: [
-    "Pokemon",
-    "Pokedex",
-    "Team Builder",
-    "Pokemon Stats",
-    "Pokemon Analysis",
-  ],
+  keywords: ["Pokemon", "Pokedex", "Team Builder", "Pokemon Stats", "Pokemon Analysis"],
 
-  authors: [{ name: "Aswini", url: "https://nextjs.org" }],
+  authors: [{name: "Aswini", url: "https://nextjs.org"}],
   creator: "Aswini",
   publisher: "Aswini",
 
@@ -60,16 +56,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${poppins.variable} ${jetbrainsMono.variable} antialiased`}
-      >
+        className={`${inter.variable} ${poppins.variable} ${jetbrainsMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
-        >
+          disableTransitionOnChange>
           <Providers>
             {children}
             <Toaster richColors />

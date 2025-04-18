@@ -1,16 +1,17 @@
 "use client";
 
-import { QueryClientProvider } from "@tanstack/react-query";
+import {QueryClientProvider} from "@tanstack/react-query";
+
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import { getQueryClient } from "./get-query-client";
+import {getQueryClient} from "./get-query-client";
 
 type ProviderProps = {
   children: React.ReactNode;
 };
 
 // React Query is a client-side tool because it manages state within the browser. We need to ensure its provider is a client-side component, which is why we're creating it outside of the RootLayout file.
-export default function Providers({ children }: ProviderProps) {
+export default function Providers({children}: ProviderProps) {
   const queryClient = getQueryClient();
 
   return (

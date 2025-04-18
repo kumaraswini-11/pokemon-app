@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button";
+import {Moon, Sun} from "lucide-react";
+import {useTheme} from "next-themes";
+
+import {Button} from "@/components/ui/button";
 
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
+  const {theme, setTheme} = useTheme();
 
   const isDark = theme === "dark";
 
@@ -16,7 +17,10 @@ export function ThemeSwitcher() {
   };
 
   return (
-    <Button variant="outline" size="icon" onClick={toggleTheme}>
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={toggleTheme}>
       <Sun
         className={`h-[1.2rem] w-[1.2rem] transition-all ${
           isDark ? "scale-0 rotate-90" : "scale-100 rotate-0"

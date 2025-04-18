@@ -1,24 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import React, {useState} from "react";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import { getMaxStat, getTypeColor, POKEMON_IMAGE_BASE_URL } from "@/constants";
-import { cn } from "@/lib/utils";
-import { TeamSelectionPopup } from "./team-selection-popup";
+import {PlusCircle} from "lucide-react";
+
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {Progress} from "@/components/ui/progress";
+import {Separator} from "@/components/ui/separator";
+import {POKEMON_IMAGE_BASE_URL, getMaxStat, getTypeColor} from "@/constants";
+import {cn} from "@/lib/utils";
+
+import {TeamSelectionPopup} from "./team-selection-popup";
 
 interface Pokemon {
   id: number;
@@ -26,7 +22,7 @@ interface Pokemon {
   types: string[];
   abilities: string[];
   generation: string;
-  stats: { stat: string; value: number }[];
+  stats: {stat: string; value: number}[];
 }
 
 interface PokemonCardProps {
@@ -35,11 +31,7 @@ interface PokemonCardProps {
   onAddToTeam?: (pokemon: Pokemon) => void;
 }
 
-export const PokemonCard: React.FC<PokemonCardProps> = ({
-  pokemon,
-  pageIndex,
-  onAddToTeam,
-}) => {
+export const PokemonCard: React.FC<PokemonCardProps> = ({pokemon, pageIndex, onAddToTeam}) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handleAddToTeam = (e: React.MouseEvent) => {
@@ -56,7 +48,9 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
   return (
     <>
       <Card className="group h-full overflow-hidden px-2 transition-all hover:shadow-md">
-        <Link href={`/pokemon/${pokemon.name}`} className="block h-full">
+        <Link
+          href={`/pokemon/${pokemon.name}`}
+          className="block h-full">
           <CardHeader className="p-3 pb-2 text-center">
             <div className="relative mx-auto mb-1 size-24">
               <Image
@@ -70,22 +64,18 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
               />
             </div>
             <div className="mb-1.5 flex items-center justify-between">
-              <CardTitle className="text-base font-semibold capitalize">
-                {pokemon.name}
-              </CardTitle>
-              <Badge variant="outline" className="h-5 px-1.5 font-mono text-xs">
+              <CardTitle className="text-base font-semibold capitalize">{pokemon.name}</CardTitle>
+              <Badge
+                variant="outline"
+                className="h-5 px-1.5 font-mono text-xs">
                 #{pokemon.id.toString().padStart(3, "0")}
               </Badge>
             </div>
             <div className="flex flex-wrap justify-center gap-1.5">
-              {pokemon.types.map((type) => (
+              {pokemon.types.map(type => (
                 <Badge
                   key={type}
-                  className={cn(
-                    "px-2 py-0.5 text-xs font-medium capitalize",
-                    getTypeColor(type)
-                  )}
-                >
+                  className={cn("px-2 py-0.5 text-xs font-medium capitalize", getTypeColor(type))}>
                   {type}
                 </Badge>
               ))}
@@ -107,12 +97,11 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
                 <h4 className="text-xs font-medium">Abilities</h4>
               </div>
               <div className="mt-1 flex flex-wrap gap-1">
-                {pokemon.abilities.map((ability) => (
+                {pokemon.abilities.map(ability => (
                   <Badge
                     key={ability}
                     variant="secondary"
-                    className="max-w-full truncate px-1.5 py-0 text-xs capitalize"
-                  >
+                    className="max-w-full truncate px-1.5 py-0 text-xs capitalize">
                     {ability.replace("-", " ")}
                   </Badge>
                 ))}
@@ -123,7 +112,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
             <div className="mt-3">
               <h4 className="mb-1 text-xs font-medium">Base Stats</h4>
               <div className="space-y-1.5">
-                {pokemon.stats.map((stat) => {
+                {pokemon.stats.map(stat => {
                   const maxValue = getMaxStat(stat.stat);
                   const percentage = (stat.value / maxValue) * 100;
                   const progressColor =
@@ -134,11 +123,11 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
                         : "bg-red-500";
 
                   return (
-                    <div key={stat.stat} className="space-y-0.5">
+                    <div
+                      key={stat.stat}
+                      className="space-y-0.5">
                       <div className="text-muted-foreground flex items-center justify-between text-xs">
-                        <span className="capitalize">
-                          {stat.stat.replace("-", " ")}
-                        </span>
+                        <span className="capitalize">{stat.stat.replace("-", " ")}</span>
                         <span className="font-mono">{stat.value}</span>
                       </div>
                       <Progress
@@ -158,8 +147,7 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({
               variant="secondary"
               size="sm"
               className="h-9 w-full border text-xs hover:opacity-75"
-              onClick={handleAddToTeam}
-            >
+              onClick={handleAddToTeam}>
               <PlusCircle className="mr-1 size-3.5" />
               Add to Team
             </Button>

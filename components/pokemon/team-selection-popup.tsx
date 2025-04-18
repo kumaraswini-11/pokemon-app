@@ -1,21 +1,22 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
+import React, {useCallback, useMemo, useState} from "react";
 
+import {PlusCircle} from "lucide-react";
+import {toast} from "sonner";
+
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { PlusCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useTeamStore } from "@/store/team-store";
-import { MAX_POKEMON_PER_TEAM, MAX_TEAM } from "@/constants";
+import {Input} from "@/components/ui/input";
+import {MAX_POKEMON_PER_TEAM, MAX_TEAM} from "@/constants";
+import {useTeamStore} from "@/store/team-store";
 
 interface TeamSelectionPopupProps {
   isOpen: boolean;
@@ -32,9 +33,9 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
   onClose,
   pokemon,
 }) => {
-  const teams = useTeamStore((state) => state.teams);
-  const addTeam = useTeamStore((state) => state.addTeam);
-  const addPokemonToTeam = useTeamStore((state) => state.addPokemonToTeam);
+  const teams = useTeamStore(state => state.teams);
+  const addTeam = useTeamStore(state => state.addTeam);
+  const addPokemonToTeam = useTeamStore(state => state.addPokemonToTeam);
 
   const [newTeamName, setNewTeamName] = useState("");
 
@@ -42,13 +43,11 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
     (teamId: string) => {
       if (!pokemon) return;
 
-      const team = teams.find((t) => t.id === teamId);
+      const team = teams.find(t => t.id === teamId);
       if (!team) return;
 
       // Check if Pokemon already exists in the team
-      const isAlreadyInTeam = team.members.some(
-        (member) => member.id === pokemon.id
-      );
+      const isAlreadyInTeam = team.members.some(member => member.id === pokemon.id);
       if (isAlreadyInTeam) {
         toast.error("Already Exists", {
           description: `${pokemon.name} is already in ${team.name}.`,
@@ -116,23 +115,22 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
 
   const teamList = useMemo(
     () =>
-      teams?.map((team) => (
+      teams?.map(team => (
         <Button
           key={team.id}
           variant="outline"
           size="lg"
           className="border-border hover:bg-muted flex w-full items-center justify-between gap-1 rounded-md border p-3 transition"
           onClick={() => handleAddToTeam(team.id)}
-          aria-label={`Add to ${team.name} team`}
-        >
+          aria-label={`Add to ${team.name} team`}>
           {/* Left Section: Team Info */}
           <div className="flex w-full flex-col items-start">
             {/* Team Name + Badge */}
             <div className="flex items-center justify-center gap-2">
-              <span className="text-foreground text-sm font-medium">
-                {team.name}
-              </span>
-              <Badge variant="secondary" className="px-2 py-0 text-xs">
+              <span className="text-foreground text-sm font-medium">{team.name}</span>
+              <Badge
+                variant="secondary"
+                className="px-2 py-0 text-xs">
                 {team.members.length}/{MAX_POKEMON_PER_TEAM}
               </Badge>
             </div>
@@ -141,7 +139,7 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
             {team.members.length > 0 && (
               <p className="text-muted-foreground line-clamp-2 text-xs leading-tight text-wrap">
                 <span className="text-foreground font-medium">Members:</span>{" "}
-                {team.members.map((member) => member.name).join(", ")}
+                {team.members.map(member => member.name).join(", ")}
               </p>
             )}
           </div>
@@ -151,14 +149,15 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={open => !open && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Select a Team</DialogTitle>
           <DialogDescription>
-            Create a new team or add to an existing one (max{" "}
-            {MAX_POKEMON_PER_TEAM} Pokemon per team). For more functionality, go
-            to the Team Builder page.
+            Create a new team or add to an existing one (max {MAX_POKEMON_PER_TEAM} Pokemon per
+            team). For more functionality, go to the Team Builder page.
           </DialogDescription>
         </DialogHeader>
 
@@ -176,11 +175,13 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
           <Input
             placeholder="New team name"
             value={newTeamName}
-            onChange={(e) => setNewTeamName(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleCreateTeam()}
+            onChange={e => setNewTeamName(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleCreateTeam()}
             aria-label="New team name input"
           />
-          <Button onClick={handleCreateTeam} aria-label="Create new team">
+          <Button
+            onClick={handleCreateTeam}
+            aria-label="Create new team">
             <PlusCircle className="mr-2 size-4" />
             Create
           </Button>

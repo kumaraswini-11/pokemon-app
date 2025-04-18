@@ -1,39 +1,40 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { EyeOff, Eye } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
+import {useState} from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { signUpAction, socialSignInAction } from "@/lib/actions/auth-actions";
-import { SignUpFormValues, signUpFormSchema } from "@/schemas";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useMutation} from "@tanstack/react-query";
+import {Eye, EyeOff} from "lucide-react";
+import {AnimatePresence, motion} from "motion/react";
+import {useForm} from "react-hook-form";
+import {toast} from "sonner";
+
+import {SocialOAuthButton} from "@/components/shared/social-oauth-button";
+import {Button} from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
-  Form,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
-import { SocialOAuthButton } from "@/components/shared/social-oauth-button";
+import {Input} from "@/components/ui/input";
+import {Separator} from "@/components/ui/separator";
+import {signUpAction, socialSignInAction} from "@/lib/actions/auth-actions";
+import {cn} from "@/lib/utils";
+import {SignUpFormValues, signUpFormSchema} from "@/schemas";
 
 interface SignUpResponse {
   success: boolean;
@@ -47,16 +48,16 @@ export default function SignUpForm() {
 
   // Animation variants for the eye icon toggle
   const iconVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
+    hidden: {opacity: 0, scale: 0.8},
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.2, ease: "easeInOut" },
+      transition: {duration: 0.2, ease: "easeInOut"},
     },
     exit: {
       opacity: 0,
       scale: 0.8,
-      transition: { duration: 0.2, ease: "easeInOut" },
+      transition: {duration: 0.2, ease: "easeInOut"},
     },
   };
 
@@ -70,9 +71,9 @@ export default function SignUpForm() {
     },
   });
 
-  const { mutate, isPending } = useMutation({
+  const {mutate, isPending} = useMutation({
     mutationFn: async (values: SignUpFormValues) => {
-      const res = await signUpAction({ ...values, provider: "credentials" });
+      const res = await signUpAction({...values, provider: "credentials"});
       if (!res.success) {
         throw new Error(res.error || "An unexpected error occurred");
       }
@@ -115,7 +116,9 @@ export default function SignUpForm() {
               provider="google"
               label="Sign in with Google"
               icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24">
                   <path
                     d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
                     fill="currentColor"
@@ -130,23 +133,22 @@ export default function SignUpForm() {
           {/* Separator */}
           <div className="my-2 flex items-center gap-2">
             <Separator className="flex-1" />
-            <span className="text-muted-foreground text-xs">
-              Or continue with
-            </span>
+            <span className="text-muted-foreground text-xs">Or continue with</span>
             <Separator className="flex-1" />
           </div>
 
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="mt-4 space-y-4"
-            >
+              className="mt-4 space-y-4">
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem>
-                    <FormLabel htmlFor="name" className="sr-only">
+                    <FormLabel
+                      htmlFor="name"
+                      className="sr-only">
                       Name
                     </FormLabel>
                     <FormControl>
@@ -159,9 +161,7 @@ export default function SignUpForm() {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>
-                      This is your public display name.
-                    </FormDescription>
+                    <FormDescription>This is your public display name.</FormDescription>
                     <FormMessage aria-live="polite" />
                   </FormItem>
                 )}
@@ -170,9 +170,11 @@ export default function SignUpForm() {
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem>
-                    <FormLabel htmlFor="email" className="sr-only">
+                    <FormLabel
+                      htmlFor="email"
+                      className="sr-only">
                       Email
                     </FormLabel>
                     <FormControl>
@@ -196,9 +198,11 @@ export default function SignUpForm() {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem>
-                    <FormLabel htmlFor="password" className="sr-only">
+                    <FormLabel
+                      htmlFor="password"
+                      className="sr-only">
                       Password
                     </FormLabel>
                     <FormControl>
@@ -221,9 +225,7 @@ export default function SignUpForm() {
                           size="sm"
                           className="absolute top-0 right-0 h-10 w-10 px-3"
                           onClick={() => setShowPassword(!showPassword)}
-                          aria-label={
-                            showPassword ? "Hide password" : "Show password"
-                          }
+                          aria-label={showPassword ? "Hide password" : "Show password"}
                           tabIndex={-1} // Prevents tab focus, as it's a secondary action
                         >
                           <AnimatePresence mode="popLayout">
@@ -233,8 +235,7 @@ export default function SignUpForm() {
                                 variants={iconVariants}
                                 initial="hidden"
                                 animate="visible"
-                                exit="exit"
-                              >
+                                exit="exit">
                                 <EyeOff className="text-muted-foreground size-4" />
                               </motion.div>
                             ) : (
@@ -243,8 +244,7 @@ export default function SignUpForm() {
                                 variants={iconVariants}
                                 initial="hidden"
                                 animate="visible"
-                                exit="exit"
-                              >
+                                exit="exit">
                                 <Eye className="text-muted-foreground size-4" />
                               </motion.div>
                             )}
@@ -253,8 +253,8 @@ export default function SignUpForm() {
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Password must be 6 characters or more with one uppercase
-                      letter and one special character.
+                      Password must be 6 characters or more with one uppercase letter and one
+                      special character.
                     </FormDescription>
 
                     <FormMessage aria-live="polite" />
@@ -267,8 +267,7 @@ export default function SignUpForm() {
                 size="lg"
                 className="w-full"
                 disabled={isPending}
-                aria-disabled={isPending}
-              >
+                aria-disabled={isPending}>
                 {isPending ? "Signing up..." : "Sign Up"}
               </Button>
             </form>
@@ -280,8 +279,7 @@ export default function SignUpForm() {
             Already have an account?{" "}
             <Link
               href="/sign-in"
-              className="text-primary font-medium hover:underline hover:underline-offset-4"
-            >
+              className="text-primary font-medium hover:underline hover:underline-offset-4">
               Sign in
             </Link>
           </div>

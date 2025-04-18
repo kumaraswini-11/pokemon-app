@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import {LucideIcon} from "lucide-react";
 
 export interface PokemonListParams {
   search?: string;
@@ -101,16 +101,16 @@ export interface TeamCardProps {
 export interface TeamAnalysisProps {
   analysis: {
     score: number | null;
-    typeCoverage: { type: string; count: number }[];
-    weaknesses: { type: string; count: number }[];
-    resistances: { type: string; count: number }[];
-    immunities: { type: string; count: number }[];
+    typeCoverage: {type: string; count: number}[];
+    weaknesses: {type: string; count: number}[];
+    resistances: {type: string; count: number}[];
+    immunities: {type: string; count: number}[];
   };
 }
 
 export interface TeamAnalysisItemProps {
   label: string;
-  items: { type: string; count: number }[];
+  items: {type: string; count: number}[];
   emptyText: string;
 }
 

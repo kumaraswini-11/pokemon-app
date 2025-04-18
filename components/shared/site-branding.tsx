@@ -5,8 +5,7 @@ export const SiteBranding = () => {
   return (
     <Link
       href="/"
-      className="flex items-center space-x-2 transition hover:opacity-75"
-    >
+      className="flex items-center space-x-2 transition hover:opacity-75">
       <Image
         src="/pokemon-site-logo-0.svg"
         alt="Pokedex logo"

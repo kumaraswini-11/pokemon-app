@@ -1,57 +1,44 @@
 "use client";
 
-import React, { useState } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import {
-  GripVertical,
-  Trash2,
-  Edit,
-  Check,
-  X,
-  PlusCircle,
-  Info,
-  Users,
-} from "lucide-react";
-import { toast } from "sonner";
+import React, {useState} from "react";
 
-import { useTeamStore, analyzeTeam } from "@/store/team-store";
-import { getTypeColor, MAX_POKEMON_PER_TEAM } from "@/constants";
-import { Button } from "@/components/ui/button";
+import {Check, Edit, GripVertical, Info, PlusCircle, Trash2, Users, X} from "lucide-react";
+import {DndProvider, useDrag, useDrop} from "react-dnd";
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {toast} from "sonner";
+
+import {Loader} from "@/components/shared/loader";
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardFooter,
-  CardDescription,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { usePokemonTypeEffectiveness } from "@/hooks/use-pokemon-queries";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Loader } from "@/components/shared/loader";
+import {Input} from "@/components/ui/input";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {MAX_POKEMON_PER_TEAM, getTypeColor} from "@/constants";
+import {usePokemonTypeEffectiveness} from "@/hooks/use-pokemon-queries";
+import {cn} from "@/lib/utils";
+import {analyzeTeam, useTeamStore} from "@/store/team-store";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  TeamGridProps,
-  TeamCardProps,
   DragItem,
-  TeamAnalysisProps,
-  TeamAnalysisItemProps,
   PokemonItemProps,
+  TeamAnalysisItemProps,
+  TeamAnalysisProps,
+  TeamCardProps,
+  TeamGridProps,
 } from "@/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ITEM_TYPE = "POKEMON";
 
 export default function TeamBuilderPage() {
-  const { data: typeEffectiveness, isLoading } = usePokemonTypeEffectiveness();
-  const { teams, addTeam } = useTeamStore();
+  const {data: typeEffectiveness, isLoading} = usePokemonTypeEffectiveness();
+  const {teams, addTeam} = useTeamStore();
 
   const handleAddTeam = () => {
     const teamName = `Team ${teams.length + 1}`;
@@ -64,14 +51,15 @@ export default function TeamBuilderPage() {
       <div className="container mx-auto space-y-3 px-6 py-2">
         <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
           <div className="space-y-0.5">
-            <h2 className="text-xl font-semibold tracking-tight">
-              Team Builder
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight">Team Builder</h2>
             <p className="text-muted-foreground text-xs">
               Organize your Pokemon roster into strategic teams
             </p>
           </div>
-          <Button onClick={handleAddTeam} size="sm" className="flex-shrink-0">
+          <Button
+            onClick={handleAddTeam}
+            size="sm"
+            className="flex-shrink-0">
             <PlusCircle className="mr-1.5 size-3.5" />
             New Team
           </Button>
@@ -89,8 +77,8 @@ export default function TeamBuilderPage() {
   );
 }
 
-function TeamGrid({ typeEffectiveness }: TeamGridProps) {
-  const { teams, deleteTeam } = useTeamStore();
+function TeamGrid({typeEffectiveness}: TeamGridProps) {
+  const {teams, deleteTeam} = useTeamStore();
 
   const handleRemoveTeam = (teamId: string, teamName: string) => {
     if (!confirm(`Delete "${teamName}" team?`)) return;
@@ -110,7 +98,7 @@ function TeamGrid({ typeEffectiveness }: TeamGridProps) {
         />
       ) : (
         <div className="xs:grid-cols-1 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {teams.map((team) => (
+          {teams.map(team => (
             <TeamCard
               key={team.id}
               team={team}
@@ -124,7 +112,7 @@ function TeamGrid({ typeEffectiveness }: TeamGridProps) {
   );
 }
 
-function EmptyState({ onAddTeam }: { onAddTeam: () => void }) {
+function EmptyState({onAddTeam}: {onAddTeam: () => void}) {
   return (
     <Card className="border-dashed">
       <CardContent className="flex flex-col items-center justify-center py-8 text-center">
@@ -133,7 +121,9 @@ function EmptyState({ onAddTeam }: { onAddTeam: () => void }) {
         <p className="text-muted-foreground mb-2 max-w-md text-xs">
           Create your first team to start organizing your Pokemon roster
         </p>
-        <Button onClick={onAddTeam} size="sm">
+        <Button
+          onClick={onAddTeam}
+          size="sm">
           <PlusCircle className="mr-1.5 size-3.5" />
           Create Your First Team
         </Button>
@@ -142,16 +132,15 @@ function EmptyState({ onAddTeam }: { onAddTeam: () => void }) {
   );
 }
 
-function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
-  const { addPokemonToTeam, removePokemonFromTeam, updateTeamName } =
-    useTeamStore();
+function TeamCard({team, typeEffectiveness, onRemove}: TeamCardProps) {
+  const {addPokemonToTeam, removePokemonFromTeam, updateTeamName} = useTeamStore();
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(team.name);
   const analysis = analyzeTeam(team, typeEffectiveness || {});
 
   // useDrop is a React DnD hook that enables a component to act as a drop target
-  const [{ isOver, canDrop }, drop] = useDrop({
+  const [{isOver, canDrop}, drop] = useDrop({
     // Accept only items of type ITEM_TYPE (e.g., a Pokemon object).
     accept: ITEM_TYPE,
 
@@ -167,7 +156,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
       }
 
       // Pokemon alredy exits in the team
-      if (team.members.some((p) => p.id === item.pokemon.id)) {
+      if (team.members.some(p => p.id === item.pokemon.id)) {
         toast.error(`${item.pokemon.name} already in ${team.name}`);
         return;
       }
@@ -178,7 +167,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
     },
 
     // Collect function gathers drop state information.
-    collect: (monitor) => ({
+    collect: monitor => ({
       isOver: !!monitor.isOver(),
       canDrop: !!monitor.canDrop(),
     }),
@@ -196,22 +185,23 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
   };
 
   return (
-    <ScrollArea className="h-[30rem]" key={team.id}>
+    <ScrollArea
+      className="h-[30rem]"
+      key={team.id}>
       <Card
         ref={drop}
         className={cn(
           "py-2 transition-colors",
           isOver && canDrop ? "border-primary bg-primary/5 border-2" : null,
           isOver && !canDrop ? "border-destructive border-2" : null
-        )}
-      >
+        )}>
         <CardHeader className="flex-row items-center justify-between gap-1 p-2 px-3">
           {isEditing ? (
             <div className="flex w-full items-center gap-1">
               <Input
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSaveName()}
+                onChange={e => setName(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleSaveName()}
                 className="h-7 text-xs"
                 autoFocus
               />
@@ -222,8 +212,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
                       size="icon"
                       variant="ghost"
                       onClick={handleSaveName}
-                      className="size-7"
-                    >
+                      className="size-7">
                       <Check className="size-3.5" />
                     </Button>
                   </TooltipTrigger>
@@ -240,8 +229,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
                         setName(team.name);
                         setIsEditing(false);
                       }}
-                      className="size-7"
-                    >
+                      className="size-7">
                       <X className="size-3.5" />
                     </Button>
                   </TooltipTrigger>
@@ -252,9 +240,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
           ) : (
             <>
               <div className="flex min-w-0 flex-col">
-                <CardTitle className="truncate text-base capitalize">
-                  {team.name}
-                </CardTitle>
+                <CardTitle className="truncate text-base capitalize">{team.name}</CardTitle>
                 <CardDescription className="text-xs">
                   {team.members.length}/{MAX_POKEMON_PER_TEAM}
                 </CardDescription>
@@ -267,8 +253,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
                         size="icon"
                         variant="ghost"
                         onClick={() => setIsEditing(true)}
-                        className="size-7"
-                      >
+                        className="size-7">
                         <Edit className="size-3.5" />
                       </Button>
                     </TooltipTrigger>
@@ -282,8 +267,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
                         size="icon"
                         variant="ghost"
                         onClick={onRemove}
-                        className="size-7"
-                      >
+                        className="size-7">
                         <Trash2 className="text-destructive size-3.5" />
                       </Button>
                     </TooltipTrigger>
@@ -297,7 +281,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
         <CardContent className="space-y-1.5 px-2 pt-0">
           {team.members.length ? (
             <ul className="space-y-1.5">
-              {team.members.map((pokemon) => (
+              {team.members.map(pokemon => (
                 <PokemonItem
                   key={pokemon.id}
                   pokemon={pokemon}
@@ -308,9 +292,7 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
             </ul>
           ) : (
             <div className="rounded-md border border-dashed p-1.5 text-center">
-              <p className="text-muted-foreground text-xs font-medium">
-                No Pokemon in this team
-              </p>
+              <p className="text-muted-foreground text-xs font-medium">No Pokemon in this team</p>
               <p className="text-muted-foreground text-[10px]">
                 Drag Pokemon here from other teams
               </p>
@@ -333,20 +315,21 @@ function TeamCard({ team, typeEffectiveness, onRemove }: TeamCardProps) {
   );
 }
 
-function TeamAnalysis({ analysis }: TeamAnalysisProps) {
+function TeamAnalysis({analysis}: TeamAnalysisProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="w-full">
       <div
         className="mb-1 flex cursor-pointer items-center justify-between"
-        onClick={() => setExpanded(!expanded)}
-      >
+        onClick={() => setExpanded(!expanded)}>
         <p className="flex items-center text-xs font-medium">
           <Info className="mr-1 size-3" />
           Team Analysis
         </p>
-        <Badge variant="secondary" className="text-[10px]">
+        <Badge
+          variant="secondary"
+          className="text-[10px]">
           Score: {analysis.score || "N/A"}
         </Badge>
       </div>
@@ -377,7 +360,10 @@ function TeamAnalysis({ analysis }: TeamAnalysisProps) {
         </div>
       ) : (
         <div className="text-muted-foreground bg-muted/10 flex flex-wrap gap-1 rounded-md border p-2 text-[10px]">
-          <TypeSummary label="Coverage" items={analysis.typeCoverage} />
+          <TypeSummary
+            label="Coverage"
+            items={analysis.typeCoverage}
+          />
           <TypeSummary
             label="Weaknesses"
             items={analysis.weaknesses}
@@ -405,7 +391,7 @@ function TypeSummary({
   color = "text-primary",
 }: {
   label: string;
-  items: { type: string; count: number }[];
+  items: {type: string; count: number}[];
   color?: string;
 }) {
   if (!items.length) return null;
@@ -416,18 +402,17 @@ function TypeSummary({
   );
 }
 
-function TeamAnalysisItem({ label, items, emptyText }: TeamAnalysisItemProps) {
+function TeamAnalysisItem({label, items, emptyText}: TeamAnalysisItemProps) {
   return (
     <div>
       <p className="mb-0.5 font-medium">{label}:</p>
       {items.length ? (
         <div className="flex flex-wrap gap-1">
-          {items.map((item) => (
+          {items.map(item => (
             <Badge
               key={item.type}
               variant="outline"
-              className={cn("px-1.5 py-0 text-[10px]", getTypeColor(item.type))}
-            >
+              className={cn("px-1.5 py-0 text-[10px]", getTypeColor(item.type))}>
               {item.type} ({item.count}x)
             </Badge>
           ))}
@@ -439,12 +424,12 @@ function TeamAnalysisItem({ label, items, emptyText }: TeamAnalysisItemProps) {
   );
 }
 
-function PokemonItem({ pokemon, teamId, teamName }: PokemonItemProps) {
-  const { removePokemonFromTeam } = useTeamStore();
-  const [{ isDragging }, drag] = useDrag({
+function PokemonItem({pokemon, teamId, teamName}: PokemonItemProps) {
+  const {removePokemonFromTeam} = useTeamStore();
+  const [{isDragging}, drag] = useDrag({
     type: ITEM_TYPE,
-    item: { type: ITEM_TYPE, pokemon, fromTeamId: teamId },
-    collect: (monitor) => ({
+    item: {type: ITEM_TYPE, pokemon, fromTeamId: teamId},
+    collect: monitor => ({
       isDragging: monitor.isDragging(),
     }),
   });
@@ -462,8 +447,7 @@ function PokemonItem({ pokemon, teamId, teamName }: PokemonItemProps) {
         "bg-card transition-all hover:shadow-sm",
         "hover:border-primary/30 cursor-grab active:cursor-grabbing",
         isDragging ? "opacity-50" : ""
-      )}
-    >
+      )}>
       <div className="flex min-w-0 items-center gap-1">
         <GripVertical className="text-muted-foreground size-3 flex-shrink-0" />
         <div className="min-w-0">
@@ -475,12 +459,11 @@ function PokemonItem({ pokemon, teamId, teamName }: PokemonItemProps) {
       </div>
       <div className="flex flex-shrink-0 items-center gap-1">
         <div className="flex gap-0.5">
-          {pokemon.types.map((type) => (
+          {pokemon.types.map(type => (
             <Badge
               key={type}
               variant="outline"
-              className={cn("px-1 py-0 text-[10px]", getTypeColor(type))}
-            >
+              className={cn("px-1 py-0 text-[10px]", getTypeColor(type))}>
               {type}
             </Badge>
           ))}
@@ -492,8 +475,7 @@ function PokemonItem({ pokemon, teamId, teamName }: PokemonItemProps) {
                 size="icon"
                 variant="ghost"
                 onClick={handleRemove}
-                className="size-6"
-              >
+                className="size-6">
                 <Trash2 className="text-destructive size-3" />
               </Button>
             </TooltipTrigger>

@@ -1,4 +1,4 @@
-import { DefaultSession } from "next-auth";
+import {DefaultSession} from "next-auth";
 
 // Extending these interfaces ensures that TypeScript will provide accurate type checking and IntelliSense support when accessing the id (and potentially role) properties on the session.user object.
 // Declare a module augmentation for "next-auth"

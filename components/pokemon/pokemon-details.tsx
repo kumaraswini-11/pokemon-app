@@ -1,47 +1,36 @@
 "use client";
 
-import React, { useMemo } from "react";
 import Image from "next/image";
-import {
-  ArrowRight,
-  ChevronRight,
-  InfoIcon,
-  Heart,
-  Download,
-  Share2,
-} from "lucide-react";
-import { toast } from "sonner";
+import React, {useMemo} from "react";
 
-import { usePokemonDetails } from "@/hooks/use-pokemon-queries";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import {ArrowRight, ChevronRight, Download, Heart, InfoIcon, Share2} from "lucide-react";
+import {toast} from "sonner";
+
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Progress} from "@/components/ui/progress";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {Separator} from "@/components/ui/separator";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {
   CATEGORY_COLORS,
-  POKEMON_IMAGE_BASE_URL,
-  getTypeColor,
-  getMaxStat,
   POKEMON_BASE_STATS,
+  POKEMON_IMAGE_BASE_URL,
+  getMaxStat,
+  getTypeColor,
 } from "@/constants";
-import { PokemonDetailsSkeleton } from "./pokemon-details-skeleton";
+import {usePokemonDetails} from "@/hooks/use-pokemon-queries";
+import {cn} from "@/lib/utils";
+
+import {PokemonDetailsSkeleton} from "./pokemon-details-skeleton";
 
 interface PokemonDetailsProps {
   name: string;
 }
 
-export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
-  const { data, isLoading, isError } = usePokemonDetails(name);
+export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
+  const {data, isLoading, isError} = usePokemonDetails(name);
 
   const totalStats = useMemo(() => {
     if (!data) return 0;
@@ -85,8 +74,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
               </div>
               <Badge
                 variant="outline"
-                className="bg-background/70 absolute top-4 right-4 backdrop-blur-sm"
-              >
+                className="bg-background/70 absolute top-4 right-4 backdrop-blur-sm">
                 {data.generation.replace("-", " ").toUpperCase()}
               </Badge>
             </div>
@@ -96,24 +84,21 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <div className="mb-2 flex items-center gap-2">
-                    <h1 className="text-3xl font-bold capitalize">
-                      {data.name}
-                    </h1>
+                    <h1 className="text-3xl font-bold capitalize">{data.name}</h1>
                     <span className="text-muted-foreground font-mono text-xl">
                       #{data.id.toString().padStart(3, "0")}
                     </span>
                   </div>
 
                   <div className="mb-4 flex flex-wrap gap-2">
-                    {data.types.map((type) => (
+                    {data.types.map(type => (
                       <Badge
                         key={type}
                         variant="outline"
                         className={cn(
                           "px-3 py-1 text-sm font-medium capitalize",
                           getTypeColor(type)
-                        )}
-                      >
+                        )}>
                         {type}
                       </Badge>
                     ))}
@@ -126,16 +111,14 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                     variant="outline"
                     onClick={() => {
                       toast("🚀 Coming Soon!", {
-                        description:
-                          "We're working hard to bring this feature to you. Stay tuned!",
+                        description: "We're working hard to bring this feature to you. Stay tuned!",
                         style: {
                           backgroundColor: "#0a1124",
                           color: "#ffffff",
                           border: "1px solid #0e1629",
                         },
                       });
-                    }}
-                  >
+                    }}>
                     <Heart className="size-4" />
                   </Button>
                   <Button
@@ -143,16 +126,14 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                     variant="outline"
                     onClick={() => {
                       toast("🚀 Coming Soon!", {
-                        description:
-                          "We're working hard to bring this feature to you. Stay tuned!",
+                        description: "We're working hard to bring this feature to you. Stay tuned!",
                         style: {
                           backgroundColor: "#0a1124",
                           color: "#ffffff",
                           border: "1px solid #0e1629",
                         },
                       });
-                    }}
-                  >
+                    }}>
                     <Share2 className="size-4" />
                   </Button>
                   <Button
@@ -160,16 +141,14 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                     variant="outline"
                     onClick={() => {
                       toast("🚀 Coming Soon!", {
-                        description:
-                          "We're working hard to bring this feature to you. Stay tuned!",
+                        description: "We're working hard to bring this feature to you. Stay tuned!",
                         style: {
                           backgroundColor: "#0a1124",
                           color: "#ffffff",
                           border: "1px solid #0e1629",
                         },
                       });
-                    }}
-                  >
+                    }}>
                     <Download className="size-4" />
                   </Button>
                 </div>
@@ -179,21 +158,15 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
 
               <div className="my-4 grid grid-cols-2 gap-x-8 gap-y-2 text-sm sm:grid-cols-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground font-medium">
-                    Height:
-                  </span>
+                  <span className="text-muted-foreground font-medium">Height:</span>
                   <span>{data.height} m</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground font-medium">
-                    Weight:
-                  </span>
+                  <span className="text-muted-foreground font-medium">Weight:</span>
                   <span>{data.weight} kg</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground font-medium">
-                    Base Exp:
-                  </span>
+                  <span className="text-muted-foreground font-medium">Base Exp:</span>
                   <span>{data.baseExperience || "N/A"}</span>
                 </div>
               </div>
@@ -203,14 +176,12 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
               <div>
                 <h3 className="mb-2 text-sm font-medium">Abilities</h3>
                 <div className="flex flex-wrap gap-2">
-                  {data.abilities.map((ability) => (
+                  {data.abilities.map(ability => (
                     <Badge
                       key={ability.name}
                       variant={ability.hidden ? "outline" : "secondary"}
-                      className="max-w-full truncate px-3 py-1 text-xs capitalize"
-                    >
-                      {ability.name.replace("-", " ")}{" "}
-                      {ability.hidden && "(Hidden)"}
+                      className="max-w-full truncate px-3 py-1 text-xs capitalize">
+                      {ability.name.replace("-", " ")} {ability.hidden && "(Hidden)"}
                     </Badge>
                   ))}
                 </div>
@@ -224,7 +195,9 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
       </Card>
 
       {/* Tabs Section */}
-      <Tabs defaultValue="stats" className="w-full">
+      <Tabs
+        defaultValue="stats"
+        className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2 md:grid-cols-4">
           <TabsTrigger value="stats">Stats</TabsTrigger>
           <TabsTrigger value="evolution">Evolution</TabsTrigger>
@@ -233,7 +206,9 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
         </TabsList>
 
         {/* Stats Tab */}
-        <TabsContent value="stats" className="mt-0">
+        <TabsContent
+          value="stats"
+          className="mt-0">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xl">Base Stats</CardTitle>
@@ -243,7 +218,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {data.stats.map((stat) => {
+                {data.stats.map(stat => {
                   const maxValue = getMaxStat(stat.stat);
                   const percentage = (stat.value / maxValue) * 100;
                   let progressColor = "bg-red-500 dark:bg-red-600";
@@ -255,19 +230,15 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                   }
 
                   // Only to show the icon
-                  const baseStat = POKEMON_BASE_STATS.find(
-                    (s) => s.key === stat.stat
-                  );
+                  const baseStat = POKEMON_BASE_STATS.find(s => s.key === stat.stat);
 
                   return (
-                    <div key={stat.stat} className="space-y-1">
+                    <div
+                      key={stat.stat}
+                      className="space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          {baseStat && (
-                            <baseStat.icon
-                              className={`${baseStat.color} size-4`}
-                            />
-                          )}
+                          {baseStat && <baseStat.icon className={`${baseStat.color} size-4`} />}
                           <span className="text-muted-foreground text-sm capitalize">
                             {stat.stat.replace("-", " ")}
                           </span>
@@ -301,13 +272,13 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
         </TabsContent>
 
         {/* Evolution Tab */}
-        <TabsContent value="evolution" className="mt-0">
+        <TabsContent
+          value="evolution"
+          className="mt-0">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xl">Evolution Chain</CardTitle>
-              <CardDescription>
-                How {data.name} evolves over time
-              </CardDescription>
+              <CardDescription>How {data.name} evolves over time</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-4">
@@ -336,8 +307,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                         evo.id === data.id
                           ? "border-primary bg-primary/5 border shadow-sm"
                           : "bg-muted hover:bg-muted/80"
-                      )}
-                    >
+                      )}>
                       <div className="bg-background/50 relative mx-auto mb-2 h-20 w-20 overflow-hidden rounded-full transition-transform hover:scale-105">
                         <Image
                           src={evo.image}
@@ -360,7 +330,9 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
         </TabsContent>
 
         {/* Moves Tab */}
-        <TabsContent value="moves" className="mt-0">
+        <TabsContent
+          value="moves"
+          className="mt-0">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-xl">Moves</CardTitle>
@@ -374,44 +346,25 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                   <table className="w-full text-sm">
                     <thead className="bg-background/95 sticky top-0 backdrop-blur-sm">
                       <tr className="border-b">
-                        <th className="px-3 py-2 text-left font-medium">
-                          Name
-                        </th>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Type
-                        </th>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Category
-                        </th>
-                        <th className="px-3 py-2 text-right font-medium">
-                          Power
-                        </th>
-                        <th className="px-3 py-2 text-right font-medium">
-                          Acc
-                        </th>
+                        <th className="px-3 py-2 text-left font-medium">Name</th>
+                        <th className="px-3 py-2 text-left font-medium">Type</th>
+                        <th className="px-3 py-2 text-left font-medium">Category</th>
+                        <th className="px-3 py-2 text-right font-medium">Power</th>
+                        <th className="px-3 py-2 text-right font-medium">Acc</th>
                         <th className="px-3 py-2 text-right font-medium">PP</th>
-                        <th className="px-3 py-2 text-right font-medium">
-                          Lvl
-                        </th>
+                        <th className="px-3 py-2 text-right font-medium">Lvl</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {data.moves.map((move) => (
+                      {data.moves.map(move => (
                         <tr
                           key={move.name}
-                          className="hover:bg-muted/50 border-b transition-colors last:border-0"
-                        >
-                          <td className="px-3 py-1.5 capitalize">
-                            {move.name.replace("-", " ")}
-                          </td>
+                          className="hover:bg-muted/50 border-b transition-colors last:border-0">
+                          <td className="px-3 py-1.5 capitalize">{move.name.replace("-", " ")}</td>
                           <td className="px-3 py-1.5">
                             <Badge
                               variant="outline"
-                              className={cn(
-                                "px-1.5 py-0.5 text-xs",
-                                getTypeColor(move.type)
-                              )}
-                            >
+                              className={cn("px-1.5 py-0.5 text-xs", getTypeColor(move.type))}>
                               {move.type}
                             </Badge>
                           </td>
@@ -420,23 +373,14 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
                               className={cn(
                                 "px-1.5 py-0.5 text-xs text-white",
                                 CATEGORY_COLORS[move.category]
-                              )}
-                            >
+                              )}>
                               {move.category}
                             </Badge>
                           </td>
-                          <td className="px-3 py-1.5 text-right">
-                            {move.power ?? "—"}
-                          </td>
-                          <td className="px-3 py-1.5 text-right">
-                            {move.accuracy ?? "—"}
-                          </td>
-                          <td className="px-3 py-1.5 text-right">
-                            {move.pp ?? "—"}
-                          </td>
-                          <td className="px-3 py-1.5 text-right">
-                            {move.level ?? "—"}
-                          </td>
+                          <td className="px-3 py-1.5 text-right">{move.power ?? "—"}</td>
+                          <td className="px-3 py-1.5 text-right">{move.accuracy ?? "—"}</td>
+                          <td className="px-3 py-1.5 text-right">{move.pp ?? "—"}</td>
+                          <td className="px-3 py-1.5 text-right">{move.level ?? "—"}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -448,7 +392,9 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
         </TabsContent>
 
         {/* Detailed Abilities Tab */}
-        <TabsContent value="abilities" className="mt-0">
+        <TabsContent
+          value="abilities"
+          className="mt-0">
           <Card>
             <CardHeader className="pb-0">
               <CardTitle className="text-xl">Detailed Abilities</CardTitle>
@@ -458,15 +404,19 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({ name }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {data.abilities.map((ability) => (
-                  <Card key={ability.name} className="overflow-hidden">
+                {data.abilities.map(ability => (
+                  <Card
+                    key={ability.name}
+                    className="overflow-hidden">
                     <CardHeader className="bg-muted/30 px-4 py-2 pt-0">
                       <div className="flex items-center justify-between">
                         <h3 className="text-base font-medium capitalize">
                           {ability.name.replace("-", " ")}
                         </h3>
                         {ability.hidden && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge
+                            variant="outline"
+                            className="text-xs">
                             Hidden
                           </Badge>
                         )}

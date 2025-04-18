@@ -1,4 +1,4 @@
-import { Heart, Swords, Shield, Zap, BrainCircuit, Wind } from "lucide-react";
+import {BrainCircuit, Heart, Shield, Swords, Wind, Zap} from "lucide-react";
 
 export const POKEMON_API_BASE_URL = "https://pokeapi.co/api/v2";
 export const POKEMON_END_POINTS = {
@@ -13,9 +13,9 @@ export const ITEMS_PER_PAGE = 10;
 export const DEBOUNCE_DELAY = 300;
 
 export const POKEMON_BASE_STATS = [
-  { key: "hp", label: "HP", icon: Heart, color: "text-red-500" },
-  { key: "attack", label: "Attack", icon: Swords, color: "text-orange-500" },
-  { key: "defense", label: "Defense", icon: Shield, color: "text-blue-500" },
+  {key: "hp", label: "HP", icon: Heart, color: "text-red-500"},
+  {key: "attack", label: "Attack", icon: Swords, color: "text-orange-500"},
+  {key: "defense", label: "Defense", icon: Shield, color: "text-blue-500"},
   {
     key: "special-attack",
     label: "Sp. Attack",
@@ -28,7 +28,7 @@ export const POKEMON_BASE_STATS = [
     icon: BrainCircuit,
     color: "text-green-500",
   },
-  { key: "speed", label: "Speed", icon: Wind, color: "text-purple-500" },
+  {key: "speed", label: "Speed", icon: Wind, color: "text-purple-500"},
 ];
 
 export const getMaxStat = (stat: string) => {

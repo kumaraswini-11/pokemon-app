@@ -1,66 +1,54 @@
 "use client";
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
+import {useState} from "react";
 
-import { Button } from "@/components/ui/button";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useMutation} from "@tanstack/react-query";
+import {AnimatePresence, motion} from "framer-motion";
+import {Eye, EyeOff, Loader2} from "lucide-react";
+import {useForm} from "react-hook-form";
+import {toast} from "sonner";
+
+import {SocialOAuthButton} from "@/components/shared/social-oauth-button";
+import {Button} from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   CardDescription,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { cn } from "@/lib/utils";
-import { SignInFormValues, signInFormSchema } from "@/schemas";
-import {
-  credentialSignInAction,
-  socialSignInAction,
-} from "@/lib/actions/auth-actions";
-import { Separator } from "@/components/ui/separator";
-import { SocialOAuthButton } from "@/components/shared/social-oauth-button";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Separator} from "@/components/ui/separator";
+import {credentialSignInAction, socialSignInAction} from "@/lib/actions/auth-actions";
+import {cn} from "@/lib/utils";
+import {SignInFormValues, signInFormSchema} from "@/schemas";
 
 interface SignInResponse {
   success: boolean;
   error?: string;
 }
 
-export default function SignInPage({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
+export default function SignInPage({className, ...props}: React.ComponentPropsWithoutRef<"div">) {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   // Animation config for password icon transitions
   const iconVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
+    hidden: {opacity: 0, scale: 0.8},
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.2, ease: "easeInOut" },
+      transition: {duration: 0.2, ease: "easeInOut"},
     },
     exit: {
       opacity: 0,
       scale: 0.8,
-      transition: { duration: 0.2, ease: "easeInOut" },
+      transition: {duration: 0.2, ease: "easeInOut"},
     },
   };
 
@@ -74,7 +62,7 @@ export default function SignInPage({
   });
 
   // Credential-based sign-in mutation
-  const { mutate, isPending } = useMutation({
+  const {mutate, isPending} = useMutation({
     mutationFn: credentialSignInAction,
     onSuccess: (res: SignInResponse) => {
       if (res.success) {
@@ -100,8 +88,7 @@ export default function SignInPage({
   return (
     <div
       className={cn("flex w-full max-w-md flex-col gap-6", className)}
-      {...props}
-    >
+      {...props}>
       <Card className="shadow-md">
         {/* Header Section */}
         <CardHeader className="space-y-1 text-center">
@@ -120,7 +107,9 @@ export default function SignInPage({
               provider="google"
               label="Sign in with Google"
               icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24">
                   <path
                     d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
                     fill="currentColor"
@@ -136,20 +125,20 @@ export default function SignInPage({
           {/* Visual Separator */}
           <div className="my-2 flex items-center gap-2">
             <Separator className="flex-1" />
-            <span className="text-muted-foreground text-xs">
-              Or continue with
-            </span>
+            <span className="text-muted-foreground text-xs">Or continue with</span>
             <Separator className="flex-1" />
           </div>
 
           {/* Email/Password Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="grid gap-4">
               {/* Email Input */}
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem>
                     <FormLabel htmlFor="email">Email</FormLabel>
                     <FormControl>
@@ -174,16 +163,17 @@ export default function SignInPage({
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem>
-                    <FormLabel htmlFor="password" className="justify-between">
+                    <FormLabel
+                      htmlFor="password"
+                      className="justify-between">
                       Password
                       {/* Forgot Password Link */}
                       <div className="flex justify-end">
                         <Link
                           href="/forgot-password"
-                          className="text-primary text-xs font-medium hover:underline hover:underline-offset-4"
-                        >
+                          className="text-primary text-xs font-medium hover:underline hover:underline-offset-4">
                           Forgot password?
                         </Link>
                       </div>
@@ -208,10 +198,7 @@ export default function SignInPage({
                           size="sm"
                           className="absolute top-0 right-0 h-10 w-10 px-3"
                           onClick={() => setShowPassword(!showPassword)}
-                          aria-label={
-                            showPassword ? "Hide password" : "Show password"
-                          }
-                        >
+                          aria-label={showPassword ? "Hide password" : "Show password"}>
                           <AnimatePresence mode="popLayout">
                             {showPassword ? (
                               <motion.div
@@ -219,8 +206,7 @@ export default function SignInPage({
                                 variants={iconVariants}
                                 initial="hidden"
                                 animate="visible"
-                                exit="exit"
-                              >
+                                exit="exit">
                                 <EyeOff className="text-muted-foreground size-[18px]" />
                               </motion.div>
                             ) : (
@@ -229,8 +215,7 @@ export default function SignInPage({
                                 variants={iconVariants}
                                 initial="hidden"
                                 animate="visible"
-                                exit="exit"
-                              >
+                                exit="exit">
                                 <Eye className="text-muted-foreground size-[18px]" />
                               </motion.div>
                             )}
@@ -249,10 +234,7 @@ export default function SignInPage({
                 size="lg"
                 disabled={isPending}
                 aria-disabled={isPending}
-                className={cn(
-                  "mt-2 flex w-full items-center justify-center gap-2"
-                )}
-              >
+                className={cn("mt-2 flex w-full items-center justify-center gap-2")}>
                 {isPending ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
@@ -272,8 +254,7 @@ export default function SignInPage({
             Don&apos;t have an account?{" "}
             <Link
               href="/sign-up"
-              className="text-primary font-medium hover:underline hover:underline-offset-4"
-            >
+              className="text-primary font-medium hover:underline hover:underline-offset-4">
               Sign up
             </Link>
           </div>

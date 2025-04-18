@@ -1,6 +1,7 @@
-import { SocialProvider } from "@/lib/actions/auth-actions";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
+import {SocialProvider} from "@/lib/actions/auth-actions";
+import {cn} from "@/lib/utils";
+
+import {Button} from "../ui/button";
 
 export const SocialOAuthButton = ({
   provider,
@@ -25,11 +26,7 @@ export const SocialOAuthButton = ({
       name="action"
       value={provider}
       disabled={disabled}
-      className={cn(
-        "flex w-full items-center justify-center gap-3 px-2",
-        className
-      )}
-    >
+      className={cn("flex w-full items-center justify-center gap-3 px-2", className)}>
       {icon}
       <span className="capitalize">{label}</span>
     </Button>

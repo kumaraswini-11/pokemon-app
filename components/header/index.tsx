@@ -1,7 +1,7 @@
-import { SiteBranding } from "../shared/site-branding";
-import { ThemeSwitcher } from "../theme-switcher";
-import { NavMain } from "./nav-main";
-import { NavUser } from "./nav-user";
+import {SiteBranding} from "../shared/site-branding";
+import {ThemeSwitcher} from "../theme-switcher";
+import {NavMain} from "./nav-main";
+import {NavUser} from "./nav-user";
 
 export const Header: React.FC = async () => {
   return (

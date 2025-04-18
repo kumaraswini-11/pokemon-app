@@ -1,4 +1,4 @@
-import { Loader as LoadingIcon } from "lucide-react";
+import {Loader as LoadingIcon} from "lucide-react";
 
 interface LoaderProps {
   message?: string;
@@ -25,7 +25,9 @@ export const Loader: React.FC<LoaderProps> = ({
           aria-hidden="true"
         />
       )}
-      <span className="text-sm" aria-live="assertive">
+      <span
+        className="text-sm"
+        aria-live="assertive">
         {message}
       </span>
     </div>

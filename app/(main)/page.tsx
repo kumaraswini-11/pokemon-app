@@ -1,15 +1,12 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, {useMemo, useState} from "react";
 
-import {
-  FilterState,
-  PokemonFilters,
-} from "@/components/pokemon/pokemon-filter";
-import { PokemonGrid } from "@/components/pokemon/pokemon-grid";
-import { SearchInput } from "@/components/pokemon/pokemon-search-input";
-import { ITEMS_PER_PAGE } from "@/constants";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {FilterState, PokemonFilters} from "@/components/pokemon/pokemon-filter";
+import {PokemonGrid} from "@/components/pokemon/pokemon-grid";
+import {SearchInput} from "@/components/pokemon/pokemon-search-input";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {ITEMS_PER_PAGE} from "@/constants";
 
 export default function HomePage() {
   const [filterState, setFilterState] = useState<FilterState>({
@@ -18,12 +15,12 @@ export default function HomePage() {
     abilities: [],
     generation: null,
     stats: [
-      { stat: "hp", min: 0, max: 255 },
-      { stat: "attack", min: 0, max: 255 },
-      { stat: "defense", min: 0, max: 255 },
-      { stat: "special-attack", min: 0, max: 255 },
-      { stat: "special-defense", min: 0, max: 255 },
-      { stat: "speed", min: 0, max: 255 },
+      {stat: "hp", min: 0, max: 255},
+      {stat: "attack", min: 0, max: 255},
+      {stat: "defense", min: 0, max: 255},
+      {stat: "special-attack", min: 0, max: 255},
+      {stat: "special-defense", min: 0, max: 255},
+      {stat: "speed", min: 0, max: 255},
     ],
   });
 
@@ -46,9 +43,7 @@ export default function HomePage() {
       <div className="flex items-center gap-2">
         <SearchInput
           value={filterState.search}
-          onChange={(value) =>
-            setFilterState({ ...filterState, search: value })
-          }
+          onChange={value => setFilterState({...filterState, search: value})}
           className="flex-1"
         />
         {/* Mobile filter button - only visible on small screens */}

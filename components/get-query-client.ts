@@ -1,4 +1,4 @@
-import { QueryClient, isServer } from "@tanstack/react-query";
+import {QueryClient, isServer} from "@tanstack/react-query";
 
 // Creates a new instance of QueryClient with default configuration.
 function makeQueryClient() {

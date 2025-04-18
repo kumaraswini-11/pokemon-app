@@ -1,12 +1,12 @@
-import { MetadataRoute } from "next";
+import {MetadataRoute} from "next";
 
-import { api } from "@/lib/utils";
+import {api} from "@/lib/utils";
 
 // Fetch all Pokemon names for dynamic routes
 async function fetchAllPokemonNames(): Promise<string[]> {
   // This could potentially return a lot of Pokemon (800+), which might cause your sitemap to be very large, that's why limit.
-  const { data } = await api.get("/pokemon?limit=90");
-  return data?.results?.map((pokemon: { name: string }) => pokemon.name) ?? [];
+  const {data} = await api.get("/pokemon?limit=90");
+  return data?.results?.map((pokemon: {name: string}) => pokemon.name) ?? [];
 }
 const pokemonNames = await fetchAllPokemonNames();
 
@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Dynamic Pokemon routes
-  const pokemonRoutes: MetadataRoute.Sitemap = pokemonNames.map((name) => ({
+  const pokemonRoutes: MetadataRoute.Sitemap = pokemonNames.map(name => ({
     url: `${baseUrl}/pokemon/${name}`,
     lastModified: currentDate,
     changeFrequency: "monthly", // Pokemon data rarely changes

@@ -1,13 +1,13 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 
-import { api } from "@/lib/utils";
+import {api} from "@/lib/utils";
 import {
-  PokemonListParams,
-  PokemonData,
   Ability,
-  Move,
-  Stat,
   Evolution,
+  Move,
+  PokemonData,
+  PokemonListParams,
+  Stat,
   TypeEffectiveness,
 } from "@/types";
 
@@ -29,21 +29,17 @@ interface PokemonListResponse {
 export const usePokemonList = (params: Partial<PokemonListParams>) => {
   const query = useInfiniteQuery({
     queryKey: ["pokemon", params],
-    queryFn: async ({ pageParam = 0 }): Promise<PokemonListResponse> => {
+    queryFn: async ({pageParam = 0}): Promise<PokemonListResponse> => {
       const limit = params.limit || 5;
       const offset = pageParam * limit;
-      const { data } = await api.get(
-        `/pokemon?limit=${limit}&offset=${offset}`
-      );
+      const {data} = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
 
       // Fetch detailed data for each Pokemon
       const detailedResults = await Promise.all(
-        data.results.map(async (p: { name: string; url: string }) => {
-          const { data: details } = await api.get(p.url);
-          const { data: species } = await api.get(details.species.url);
-          const { data: generationData } = await api.get(
-            species.generation.url
-          );
+        data.results.map(async (p: {name: string; url: string}) => {
+          const {data: details} = await api.get(p.url);
+          const {data: species} = await api.get(details.species.url);
+          const {data: generationData} = await api.get(species.generation.url);
 
           return {
             id: details.id,
@@ -66,38 +62,31 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
         total: data.count, // Total Pokemon count (before filtering)
       };
     },
-    getNextPageParam: (lastPage) =>
-      lastPage.nextOffset !== null
-        ? lastPage.nextOffset / (params.limit || 20)
-        : undefined,
+    getNextPageParam: lastPage =>
+      lastPage.nextOffset !== null ? lastPage.nextOffset / (params.limit || 20) : undefined,
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false, // Ensures filters are handled properly
 
     // Apply filtering with React Query’s select function
-    select: (data) => {
-      const allPokemon = data.pages.flatMap((page) => page.results);
+    select: data => {
+      const allPokemon = data.pages.flatMap(page => page.results);
 
-      const filteredPokemon = allPokemon.filter((pokemon) => {
-        const statMap = pokemon.stats.reduce(
-          (acc: Record<string, number>, s) => {
-            acc[s.stat] = s.value;
-            return acc;
-          },
-          {}
-        );
+      const filteredPokemon = allPokemon.filter(pokemon => {
+        const statMap = pokemon.stats.reduce((acc: Record<string, number>, s) => {
+          acc[s.stat] = s.value;
+          return acc;
+        }, {});
 
         return (
-          (!params.search ||
-            pokemon.name.toLowerCase().includes(params.search.toLowerCase())) &&
-          (!params.types?.length ||
-            params.types.every((t) => pokemon.types.includes(t))) &&
+          (!params.search || pokemon.name.toLowerCase().includes(params.search.toLowerCase())) &&
+          (!params.types?.length || params.types.every(t => pokemon.types.includes(t))) &&
           (!params.abilities?.length ||
-            params.abilities.every((a) => pokemon.abilities.includes(a))) &&
+            params.abilities.every(a => pokemon.abilities.includes(a))) &&
           (!params.generation || pokemon.generation === params.generation) &&
           (!params.stats?.length ||
             params.stats.every(
-              (filter) =>
+              filter =>
                 (!filter.min || statMap[filter.stat] >= filter.min) &&
                 (!filter.max || statMap[filter.stat] <= filter.max)
             ))
@@ -105,9 +94,7 @@ export const usePokemonList = (params: Partial<PokemonListParams>) => {
       });
 
       // If no results after filtering, return `null` to trigger a refetch
-      return filteredPokemon.length > 0
-        ? { ...data, pages: [{ results: filteredPokemon }] }
-        : null;
+      return filteredPokemon.length > 0 ? {...data, pages: [{results: filteredPokemon}]} : null;
     },
   });
 
@@ -122,15 +109,11 @@ export const usePokemonDetails = (name: string) => {
   return useQuery({
     queryKey: ["pokemon-details", name],
     queryFn: async (): Promise<PokemonData> => {
-      const { data: pokemon } = await api.get(`/pokemon/${name.toLowerCase()}`);
+      const {data: pokemon} = await api.get(`/pokemon/${name.toLowerCase()}`);
       const [speciesRes, evolutionRes, generationRes] = await Promise.all([
         api.get(pokemon.species.url),
-        api
-          .get(pokemon.species.url)
-          .then(({ data }) => api.get(data.evolution_chain.url)),
-        api
-          .get(pokemon.species.url)
-          .then(({ data }) => api.get(data.generation.url)),
+        api.get(pokemon.species.url).then(({data}) => api.get(data.evolution_chain.url)),
+        api.get(pokemon.species.url).then(({data}) => api.get(data.generation.url)),
       ]);
 
       const species = speciesRes.data;
@@ -139,11 +122,10 @@ export const usePokemonDetails = (name: string) => {
 
       const abilities: Ability[] = await Promise.all(
         pokemon.abilities.map(async (a: any) => {
-          const { data: abilityData } = await api.get(a.ability.url);
+          const {data: abilityData} = await api.get(a.ability.url);
           const description =
-            abilityData.effect_entries.find(
-              (entry: any) => entry.language.name === "en"
-            )?.short_effect || "No description available";
+            abilityData.effect_entries.find((entry: any) => entry.language.name === "en")
+              ?.short_effect || "No description available";
           return {
             name: a.ability.name,
             description,
@@ -154,7 +136,7 @@ export const usePokemonDetails = (name: string) => {
 
       const moves: Move[] = await Promise.all(
         pokemon.moves.slice(0, 10).map(async (m: any) => {
-          const { data: moveData } = await api.get(m.move.url);
+          const {data: moveData} = await api.get(m.move.url);
           return {
             name: m.move.name,
             type: moveData.type.name,
@@ -175,17 +157,14 @@ export const usePokemonDetails = (name: string) => {
       const height = pokemon.height / 10;
       const weight = pokemon.weight / 10;
       const description =
-        species.flavor_text_entries.find(
-          (entry: any) => entry.language.name === "en"
-        )?.flavor_text || "No description available";
+        species.flavor_text_entries.find((entry: any) => entry.language.name === "en")
+          ?.flavor_text || "No description available";
       const generation = generationData.name;
 
       const evolutionChain: Evolution[] = [];
       let evoStage = evolutionData.chain;
       while (evoStage) {
-        const { data: evoPokemon } = await api.get(
-          `/pokemon/${evoStage.species.name}`
-        );
+        const {data: evoPokemon} = await api.get(`/pokemon/${evoStage.species.name}`);
         evolutionChain.push({
           id: evoPokemon.id,
           name: evoStage.species.name,
@@ -219,13 +198,13 @@ export const usePokemonDetails = (name: string) => {
 export const usePokemonSpecies = (name: string) => {
   return useQuery({
     queryKey: ["pokemon-species", name],
-    queryFn: async (): Promise<{ name: string; url: string }[]> => {
-      const { data } = await api.get("/pokemon-species");
+    queryFn: async (): Promise<{name: string; url: string}[]> => {
+      const {data} = await api.get("/pokemon-species");
       return data.results;
     },
     enabled: !!name,
     staleTime: Infinity,
-    select: (data) => data.sort((a, b) => a.name.localeCompare(b.name)),
+    select: data => data.sort((a, b) => a.name.localeCompare(b.name)),
   });
 };
 
@@ -234,13 +213,13 @@ export const usePokemonTypes = () => {
   return useQuery({
     queryKey: ["types"],
     queryFn: async (): Promise<string[]> => {
-      const { data } = await api.get("/type");
+      const {data} = await api.get("/type");
       return data.results
-        .map((type: { name: string }) => type.name)
+        .map((type: {name: string}) => type.name)
         .filter((name: string) => name !== "unknown" && name !== "shadow");
     },
     staleTime: Infinity,
-    select: (data) => data.sort(),
+    select: data => data.sort(),
   });
 };
 
@@ -249,11 +228,11 @@ export const usePokemonGenerations = () => {
   return useQuery({
     queryKey: ["generations"],
     queryFn: async (): Promise<string[]> => {
-      const { data } = await api.get("/generation");
-      return data.results.map((gen: { name: string }) => gen.name);
+      const {data} = await api.get("/generation");
+      return data.results.map((gen: {name: string}) => gen.name);
     },
     staleTime: Infinity,
-    select: (data) => data.sort(),
+    select: data => data.sort(),
   });
 };
 
@@ -262,11 +241,11 @@ export const usePokemonAbilities = () => {
   return useQuery({
     queryKey: ["abilities"],
     queryFn: async (): Promise<string[]> => {
-      const { data } = await api.get("/ability");
-      return data.results.map((ability: { name: string }) => ability.name);
+      const {data} = await api.get("/ability");
+      return data.results.map((ability: {name: string}) => ability.name);
     },
     staleTime: Infinity,
-    select: (data) => data.sort(),
+    select: data => data.sort(),
   });
 };
 
@@ -275,32 +254,22 @@ export const usePokemonTypeEffectiveness = () => {
   return useQuery({
     queryKey: ["type-effectiveness"],
     queryFn: async (): Promise<Record<string, TypeEffectiveness>> => {
-      const { data: typeList } = await api.get("/type");
+      const {data: typeList} = await api.get("/type");
       const types = typeList.results
-        .filter(
-          ({ name }: { name: string }) =>
-            name !== "unknown" && name !== "shadow"
-        )
-        .map(({ name }: { name: string }) => name);
+        .filter(({name}: {name: string}) => name !== "unknown" && name !== "shadow")
+        .map(({name}: {name: string}) => name);
 
-      const extractNames = (arr: { name: string }[] = []) =>
-        arr.map((t) => t.name);
+      const extractNames = (arr: {name: string}[] = []) => arr.map(t => t.name);
 
       const typeData = await Promise.all(
-        types.map(async (type) => {
-          const { data } = await api.get(`/type/${type}`);
+        types.map(async type => {
+          const {data} = await api.get(`/type/${type}`);
           return {
             name: type,
-            double_damage_to: extractNames(
-              data.damage_relations.double_damage_to
-            ),
-            double_damage_from: extractNames(
-              data.damage_relations.double_damage_from
-            ),
+            double_damage_to: extractNames(data.damage_relations.double_damage_to),
+            double_damage_from: extractNames(data.damage_relations.double_damage_from),
             half_damage_to: extractNames(data.damage_relations.half_damage_to),
-            half_damage_from: extractNames(
-              data.damage_relations.half_damage_from
-            ),
+            half_damage_from: extractNames(data.damage_relations.half_damage_from),
             no_damage_to: extractNames(data.damage_relations.no_damage_to),
             no_damage_from: extractNames(data.damage_relations.no_damage_from),
           };
@@ -308,7 +277,7 @@ export const usePokemonTypeEffectiveness = () => {
       );
 
       return Object.fromEntries(
-        typeData.map((type) => [
+        typeData.map(type => [
           type.name,
           {
             double_damage_to: type.double_damage_to,

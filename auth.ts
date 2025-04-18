@@ -1,12 +1,13 @@
-import { eq } from "drizzle-orm";
-import NextAuth, { type User } from "next-auth";
-import type { Provider } from "next-auth/providers";
+import {eq} from "drizzle-orm";
+import NextAuth, {type User} from "next-auth";
+import type {Provider} from "next-auth/providers";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
-import { db } from "./db/drizzle";
-import { usersTable } from "./db/schema";
-import { signInFormSchema } from "./schemas";
+import {db} from "./db/drizzle";
+import {usersTable} from "./db/schema";
+import {signInFormSchema} from "./schemas";
+
 // import { verifyPassword } from "./lib/password-utils";
 
 /**
@@ -37,17 +38,17 @@ const providers: Provider[] = [
     // You can specify which fields should be submitted, by adding keys to the `credentials` object.
     // e.g. domain, username, password, 2FA token, etc.
     credentials: {
-      email: { label: "Email", type: "email" },
-      password: { label: "Password", type: "password" },
+      email: {label: "Email", type: "email"},
+      password: {label: "Password", type: "password"},
     },
-    authorize: async (credentials) => {
+    authorize: async credentials => {
       try {
         const parsedCredentials = signInFormSchema.safeParse(credentials);
         if (!parsedCredentials.success) {
           throw new Error("Invalid input");
         }
 
-        const { email, password } = parsedCredentials.data;
+        const {email, password} = parsedCredentials.data;
 
         // logic to verify if the user exists
         const user = await db.query.usersTable.findFirst({
@@ -84,7 +85,7 @@ const providers: Provider[] = [
  * Auth.js configuration
  * @see https://authjs.dev/reference/nextjs
  */
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const {handlers, signIn, signOut, auth} = NextAuth({
   session: {
     strategy: "jwt",
     // maxAge: 30 * 24 * 60 * 60, // 30 days - explicitly set instead of default
@@ -97,7 +98,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // newUser: "/auth/sign-up",
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({token, user, account}) {
       // Initial sign in
       if (user) {
         token.id = user.id;
@@ -110,7 +111,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({session, token}) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
@@ -123,7 +124,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return session;
     },
-    async signIn({ account, profile }) {
+    async signIn({account, profile}) {
       // For Google sign-in, ensure the email is verified
       if (account?.provider === "google" && profile?.email) {
         try {
