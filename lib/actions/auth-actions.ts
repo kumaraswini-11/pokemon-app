@@ -44,12 +44,14 @@ export const signUpAction = async (signUpFormData: SignUpFormValues): Promise<Re
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function socialSignInAction(formData: FormData): Promise<any> {
-  const provider = formData.get("provider") as SocialProvider;
+  const action = formData.get("action") as SocialProvider;
+  console.log("provider::", action);
 
   try {
     // Perform sign-in without server-side redirect
-    await signIn(provider, {redirect: false});
-    return {success: true};
+    const res = await signIn(action, {redirect: false, callbackUrl: "/"});
+
+    return {success: true, data: res};
   } catch (error) {
     return {
       success: false,

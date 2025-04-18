@@ -11,7 +11,6 @@ import {AnimatePresence, motion} from "motion/react";
 import {useForm} from "react-hook-form";
 import {toast} from "sonner";
 
-import {SocialOAuthButton} from "@/components/shared/social-oauth-button";
 import {Button} from "@/components/ui/button";
 import {
   Card,
@@ -31,8 +30,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {Separator} from "@/components/ui/separator";
-import {signUpAction, socialSignInAction} from "@/lib/actions/auth-actions";
+import {signUpAction} from "@/lib/actions/auth-actions";
 import {cn} from "@/lib/utils";
 import {SignUpFormValues, signUpFormSchema} from "@/schemas";
 
@@ -83,6 +81,7 @@ export default function SignUpForm() {
       toast.success(res.message || "Sign-up successful!", {
         description: new Date().toISOString(),
       });
+
       router.push("/sign-in");
     },
     onError: (error: Error) => {
@@ -111,7 +110,7 @@ export default function SignUpForm() {
 
         <CardContent className="pb-4">
           {/* Social Authentication with OAuth (Google, etc.) */}
-          <div className="grid grid-cols-1 gap-4">
+          {/* <div className="grid grid-cols-1 gap-4">
             <SocialOAuthButton
               provider="google"
               label="Sign in with Google"
@@ -128,14 +127,14 @@ export default function SignUpForm() {
               formAction={socialSignInAction}
               disabled={isPending}
             />
-          </div>
+          </div> */}
 
           {/* Separator */}
-          <div className="my-2 flex items-center gap-2">
+          {/* <div className="my-2 flex items-center gap-2">
             <Separator className="flex-1" />
             <span className="text-muted-foreground text-xs">Or continue with</span>
             <Separator className="flex-1" />
-          </div>
+          </div> */}
 
           <Form {...form}>
             <form

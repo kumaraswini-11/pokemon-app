@@ -6,9 +6,8 @@ import Google from "next-auth/providers/google";
 
 import {db} from "./db/drizzle";
 import {usersTable} from "./db/schema";
+import {verifyPassword} from "./lib/password-utils";
 import {signInFormSchema} from "./schemas";
-
-// import { verifyPassword } from "./lib/password-utils";
 
 /**
  * Configure authentication providers
@@ -45,27 +44,25 @@ const providers: Provider[] = [
       try {
         const parsedCredentials = signInFormSchema.safeParse(credentials);
         if (!parsedCredentials.success) {
-          throw new Error("Invalid input");
+          throw new Error("Invalid input", {cause: {code: "INVALID_INPUT"}});
         }
 
         const {email, password} = parsedCredentials.data;
 
-        // logic to verify if the user exists
         const user = await db.query.usersTable.findFirst({
           where: eq(usersTable.email, email),
         });
         if (!user) {
           // No user found, so this is their first attempt to signin
           // Optionally, this is also the place you could do a user registration
-          throw new Error("Invalid credentials.");
+          throw new Error("Invalid credentials", {cause: {code: "USER_NOT_FOUND"}});
         }
 
-        // // Verify the password
-        // const isPasswordValid = await verifyPassword(
-        //   password,
-        //   user.passwordHash
-        // );
-        // if (!isPasswordValid) throw new Error("Invalid credentials.");
+        // Verify the password
+        const isPasswordValid = await verifyPassword(password, user.passwordHash);
+        if (!isPasswordValid) {
+          throw new Error("Invalid credentials", {cause: {code: "INVALID_PASSWORD"}});
+        }
 
         // return user object with their profile data
         return {
@@ -73,9 +70,10 @@ const providers: Provider[] = [
           email: user.email,
           name: user.name,
         } as User;
-      } catch (error) {
-        console.error("Authentication error:", error);
-        return null;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        console.error("Authentication error:", error.message, error.cause);
+        throw error; // Rethrow to allow callbacks to handle it
       }
     },
   }),
@@ -103,11 +101,14 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
       if (user) {
         token.id = user.id;
         token.name = user.name;
-
-        // If using Google, store the access token
-        if (account?.provider === "google") {
+        // // Persist the OAuth access_token to the token right after signin
+        if (account) {
           token.accessToken = account.access_token;
         }
+      }
+      // Example: Handle token errors (e.g., expired token)
+      if (account?.provider === "google" && !account.access_token) {
+        token.error = "OAuthTokenError";
       }
       return token;
     },
@@ -116,12 +117,13 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
         session.user.id = token.id as string;
         session.user.name = token.name as string;
       }
-
       // Add error to session if present
       if (token.error) {
         session.error = String(token.error);
       }
 
+      // Send properties to the client, like an access_token from a provider.
+      session.accessToken = token.accessToken as string;
       return session;
     },
     async signIn({account, profile}) {
@@ -148,7 +150,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
           return true;
         } catch (error) {
           console.error("Google sign-in error:", error);
-          return false;
+          throw new Error("OAuthSignin", {cause: {message: "Failed to sign in with Google"}});
         }
       }
 

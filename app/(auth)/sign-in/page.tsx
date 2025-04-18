@@ -1,18 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import {useRouter} from "next/navigation";
-import {useState} from "react";
 
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useMutation} from "@tanstack/react-query";
-import {AnimatePresence, motion} from "framer-motion";
-import {Eye, EyeOff, Loader2} from "lucide-react";
-import {useForm} from "react-hook-form";
-import {toast} from "sonner";
-
-import {SocialOAuthButton} from "@/components/shared/social-oauth-button";
-import {Button} from "@/components/ui/button";
+import {SignInForm} from "@/components/shared/sign-form";
 import {
   Card,
   CardContent,
@@ -21,70 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Separator} from "@/components/ui/separator";
-import {credentialSignInAction, socialSignInAction} from "@/lib/actions/auth-actions";
 import {cn} from "@/lib/utils";
-import {SignInFormValues, signInFormSchema} from "@/schemas";
-
-interface SignInResponse {
-  success: boolean;
-  error?: string;
-}
 
 export default function SignInPage({className, ...props}: React.ComponentPropsWithoutRef<"div">) {
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-
-  // Animation config for password icon transitions
-  const iconVariants = {
-    hidden: {opacity: 0, scale: 0.8},
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {duration: 0.2, ease: "easeInOut"},
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      transition: {duration: 0.2, ease: "easeInOut"},
-    },
-  };
-
-  // 1. Initialize the sign-in form
-  const form = useForm<SignInFormValues>({
-    resolver: zodResolver(signInFormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-
-  // Credential-based sign-in mutation
-  const {mutate, isPending} = useMutation({
-    mutationFn: credentialSignInAction,
-    onSuccess: (res: SignInResponse) => {
-      if (res.success) {
-        toast.success("Sign-in successful!", {
-          description: new Date().toISOString(),
-        });
-
-        router.push("/"); // Perform client-side redirect
-      }
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "An unexpected error occurred");
-    },
-  });
-
-  // 2. Define a submit handler.
-  const onSubmit = async (values: SignInFormValues) => {
-    if (isPending) return; // Guard against double submission
-
-    mutate(values); // Trigger the mutate function
-  };
-
   return (
     <div
       className={cn("flex w-full max-w-md flex-col gap-6", className)}
@@ -102,7 +31,7 @@ export default function SignInPage({className, ...props}: React.ComponentPropsWi
 
         <CardContent className="pb-4">
           {/* Social Authentication Section */}
-          <div className="grid grid-cols-1 gap-4">
+          {/* <div className="grid grid-cols-1 gap-4">
             <SocialOAuthButton
               provider="google"
               label="Sign in with Google"
@@ -117,135 +46,20 @@ export default function SignInPage({className, ...props}: React.ComponentPropsWi
                 </svg>
               }
               formAction={socialSignInAction}
-              disabled={isPending}
+              disabled={false}
               className={className}
             />
-          </div>
+          </div> */}
 
           {/* Visual Separator */}
-          <div className="my-2 flex items-center gap-2">
+          {/* <div className="my-2 flex items-center gap-2">
             <Separator className="flex-1" />
             <span className="text-muted-foreground text-xs">Or continue with</span>
             <Separator className="flex-1" />
-          </div>
+          </div> */}
 
           {/* Email/Password Form */}
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="grid gap-4">
-              {/* Email Input */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({field}) => (
-                  <FormItem>
-                    <FormLabel htmlFor="email">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        id="email"
-                        type="email"
-                        placeholder="email@example.com"
-                        disabled={isPending}
-                        autoComplete="email"
-                        autoCapitalize="none"
-                        aria-required="true"
-                        className="h-10"
-                      />
-                    </FormControl>
-                    <FormMessage aria-live="polite" />
-                  </FormItem>
-                )}
-              />
-
-              {/* Password Input with Toggle */}
-              <FormField
-                control={form.control}
-                name="password"
-                render={({field}) => (
-                  <FormItem>
-                    <FormLabel
-                      htmlFor="password"
-                      className="justify-between">
-                      Password
-                      {/* Forgot Password Link */}
-                      <div className="flex justify-end">
-                        <Link
-                          href="/forgot-password"
-                          className="text-primary text-xs font-medium hover:underline hover:underline-offset-4">
-                          Forgot password?
-                        </Link>
-                      </div>
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          {...field}
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Password"
-                          disabled={isPending}
-                          autoComplete="current-password"
-                          aria-label="Password"
-                          aria-required="true"
-                          className="h-10 pr-10"
-                        />
-                        {/* Toggle Password Visibility */}
-                        <Button
-                          type="button"
-                          variant="link"
-                          size="sm"
-                          className="absolute top-0 right-0 h-10 w-10 px-3"
-                          onClick={() => setShowPassword(!showPassword)}
-                          aria-label={showPassword ? "Hide password" : "Show password"}>
-                          <AnimatePresence mode="popLayout">
-                            {showPassword ? (
-                              <motion.div
-                                key="eye-off"
-                                variants={iconVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit">
-                                <EyeOff className="text-muted-foreground size-[18px]" />
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                key="eye"
-                                variants={iconVariants}
-                                initial="hidden"
-                                animate="visible"
-                                exit="exit">
-                                <Eye className="text-muted-foreground size-[18px]" />
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </Button>
-                      </div>
-                    </FormControl>
-                    <FormMessage aria-live="polite" />
-                  </FormItem>
-                )}
-              />
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                size="lg"
-                disabled={isPending}
-                aria-disabled={isPending}
-                className={cn("mt-2 flex w-full items-center justify-center gap-2")}>
-                {isPending ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  "Sign in"
-                )}
-              </Button>
-            </form>
-          </Form>
+          <SignInForm />
         </CardContent>
 
         {/* Footer with Sign-up Redirect */}
