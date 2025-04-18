@@ -1,8 +1,8 @@
 import axios from "axios";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import {type ClassValue, clsx} from "clsx";
+import {twMerge} from "tailwind-merge";
 
-import { POKEMON_API_BASE_URL } from "@/constants";
+import {POKEMON_API_BASE_URL} from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,6 +13,10 @@ export const getInitials = (name?: string): string => {
   const nameParts = name.split(" ");
   return `${nameParts[0]?.[0] || ""}${nameParts[1]?.[0] || ""}`.toUpperCase();
 };
+
+export function formatPokemonId(id: number, length?: number, padChar?: string): string {
+  return id.toString().padStart(length ?? 3, padChar ?? "0");
+}
 
 // Base configuration for API requests
 export const api = axios.create({

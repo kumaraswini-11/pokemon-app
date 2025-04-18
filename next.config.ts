@@ -7,8 +7,16 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname:
+          "raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
+      },
     ],
-    domains: ["raw.githubusercontent.com"],
   },
 
   experimental: {

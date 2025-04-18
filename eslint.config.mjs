@@ -1,6 +1,6 @@
+import { FlatCompat } from "@eslint/eslintrc";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,18 +11,29 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.config({
-    extends: [
-      "next/core-web-vitals",
-      "next/typescript",
-      "plugin:@tanstack/query/recommended",
-    ],
+    extends: ["next/core-web-vitals", "next/typescript", "prettier"],
+    plugins: ["check-file"],
     rules: {
-      // General Best Practices
-      semi: ["error", "always"],
+      "prefer-arrow-callback": ["error"],
+      "prefer-template": ["error"],
+      semi: ["error"],
       quotes: ["error", "double"],
-      "prefer-arrow-callback": "error",
-      "prefer-template": "error",
-      "no-duplicate-imports": "error",
+
+      "check-file/filename-naming-convention": [
+        "error",
+        {
+          "**/*.{ts,tsx}": "KEBAB_CASE",
+        },
+        {
+          ignoreMiddleExtensions: true,
+        },
+      ],
+      "check-file/folder-naming-convention": [
+        "error",
+        {
+          "src/**/!^[.*": "KEBAB_CASE",
+        },
+      ],
     },
   }),
 ];
