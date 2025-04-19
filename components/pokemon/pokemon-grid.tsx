@@ -5,32 +5,25 @@ import React, {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
 
 import {Badge} from "@/components/ui/badge";
-import {DEBOUNCE_DELAY} from "@/constants";
 import useDebounce from "@/hooks/use-debounce";
 import {usePokemonList} from "@/hooks/use-pokemon-queries";
-import {PokemonListParams} from "@/types";
 
 import {Loader} from "../shared/loader";
 import {PokemonCard} from "./pokemon-card";
 import {PokemonCardSkeleton} from "./pokemon-card-skeleton";
 
-interface PokemonGridProps {
-  params: Partial<PokemonListParams>;
-}
-
-export const PokemonGrid: React.FC<PokemonGridProps> = ({params}) => {
+export const PokemonGrid: React.FC = () => {
   const {ref, inView} = useInView({
-    triggerOnce: false, // Allow re-triggering when scrolled back
-    threshold: 0.1, // Adjusted for better accuracy
+    threshold: 0.1,
+    triggerOnce: false,
   });
 
   const {data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, refetch} =
-    usePokemonList(params);
+    usePokemonList();
 
-  const allPokemon = data?.pages?.flatMap(page => page.results) ?? [];
-
-  // Debounce the inView value to prevent unnecessary fetches
-  const debouncedInView = useDebounce(inView, DEBOUNCE_DELAY);
+  const allPokemon = data?.pages.flatMap(page => page.results) ?? [];
+  const debouncedInView = useDebounce(inView, 300);
+  const showLoadMore = useDebounce(hasNextPage && !isFetchingNextPage, 500);
 
   useEffect(() => {
     if (debouncedInView && hasNextPage && !isFetchingNextPage) {
@@ -38,20 +31,16 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({params}) => {
     }
   }, [debouncedInView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Trigger a refetch if the cached data has no results
   useEffect(() => {
-    if (!isLoading && allPokemon.length === 0) {
+    if (!isLoading && allPokemon.length === 0 && hasNextPage) {
       refetch();
     }
-  }, [allPokemon.length, isLoading, refetch]);
-
-  // Prevent flickering of "Load More" button
-  const showLoadMore = useDebounce(hasNextPage && !isFetchingNextPage, 500);
+  }, [allPokemon.length, isLoading, hasNextPage, refetch]);
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {Array.from({length: 8}).map((_, i) => (
+        {Array.from({length: 9}).map((_, i) => (
           <PokemonCardSkeleton key={i} />
         ))}
       </div>
@@ -62,19 +51,19 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({params}) => {
     return (
       <div className="py-8 text-center">
         <p className="text-red-500 dark:text-red-400">
-          Failed to load Pokemon. Please try again later.
+          Failed to load Pokémon. Please try again later.
         </p>
       </div>
     );
   }
 
-  if (allPokemon.length === 0 && isLoading) {
+  if (allPokemon.length === 0 && !hasNextPage) {
     return (
       <div className="py-8 text-center">
         <Badge
           variant="secondary"
           className="px-4 py-1.5 text-sm">
-          No Pokemon found with current filters.
+          No Pokémon found with current filters.
         </Badge>
       </div>
     );
@@ -82,7 +71,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({params}) => {
 
   return (
     <>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(295px,1fr))] gap-1">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(295px,1fr))] gap-2">
         {allPokemon.map((pokemon, i) => (
           <PokemonCard
             key={pokemon.id}
@@ -91,25 +80,23 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({params}) => {
           />
         ))}
       </div>
-
-      {/* Footer area for loading indicators or end messages */}
       <div
         ref={ref}
         className="col-span-full py-8 text-center">
         {isFetchingNextPage ? (
-          <Loader message="Loading more Pokemon..." />
+          <Loader message="Loading more Pokémon..." />
         ) : showLoadMore ? (
           <Badge
             variant="default"
-            className="px-4 py-1.5 text-sm"
+            className="px-4 py-1.5 text-sm cursor-pointer"
             onClick={() => fetchNextPage()}>
-            Load more Pokemon
+            Load more Pokémon
           </Badge>
         ) : (
           <Badge
             variant="secondary"
             className="px-4 py-1.5 text-sm">
-            No more Pokemon
+            No more Pokémon
           </Badge>
         )}
       </div>

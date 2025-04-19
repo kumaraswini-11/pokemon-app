@@ -15,17 +15,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
-import {MAX_POKEMON_PER_TEAM, MAX_TEAM} from "@/constants";
-import {useTeamStore} from "@/store/team-store";
+import {MAX_MEMBERS_PER_TEAM, MAX_TEAMS} from "@/constants";
+import {usePokemonTeamsStore} from "@/store/team-store";
+import {PokemonInTeam} from "@/types/pokemon";
 
 interface TeamSelectionPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  pokemon: {
-    id: number;
-    name: string;
-    types: string[];
-  } | null;
+  pokemon: PokemonInTeam | null;
 }
 
 export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
@@ -33,10 +30,7 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
   onClose,
   pokemon,
 }) => {
-  const teams = useTeamStore(state => state.teams);
-  const addTeam = useTeamStore(state => state.addTeam);
-  const addPokemonToTeam = useTeamStore(state => state.addPokemonToTeam);
-
+  const {teams, addTeam, addPokemonToTeam} = usePokemonTeamsStore();
   const [newTeamName, setNewTeamName] = useState("");
 
   const handleAddToTeam = useCallback(
@@ -46,29 +40,23 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
       const team = teams.find(t => t.id === teamId);
       if (!team) return;
 
-      // Check if Pokemon already exists in the team
-      const isAlreadyInTeam = team.members.some(member => member.id === pokemon.id);
-      if (isAlreadyInTeam) {
+      if (team.members.some(member => member.id === pokemon.id)) {
         toast.error("Already Exists", {
           description: `${pokemon.name} is already in ${team.name}.`,
         });
         return;
       }
 
-      if (team.members.length >= MAX_POKEMON_PER_TEAM) {
+      if (team.members.length >= MAX_MEMBERS_PER_TEAM) {
         toast.error("Team Full", {
-          description: `This team already has ${MAX_POKEMON_PER_TEAM} Pokemon.`,
+          description: `This team already has ${MAX_MEMBERS_PER_TEAM} Pokémon.`,
         });
         return;
       }
 
       try {
-        addPokemonToTeam(teamId, {
-          id: pokemon.id,
-          name: pokemon.name,
-          types: pokemon.types,
-        });
-        toast.success("Pokemon Added!", {
+        addPokemonToTeam(teamId, pokemon);
+        toast.success("Pokémon Added!", {
           description: `${pokemon.name} was added to ${team.name}.`,
         });
         onClose();
@@ -84,14 +72,21 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
   const handleCreateTeam = useCallback(() => {
     if (!newTeamName.trim()) {
       toast.error("Error", {
-        description: "Team name cannot be empty",
+        description: "Team name cannot be empty.",
       });
       return;
     }
 
-    if (teams.length >= MAX_TEAM) {
+    // if (newTeamName.trim().length < 3) {
+    //   toast.error("Error", {
+    //     description: "Team name must be at least 3 characters.",
+    //   });
+    //   return;
+    // }
+
+    if (teams.length >= MAX_TEAMS) {
       toast.error("Limit Reached", {
-        description: `You can only create up to ${MAX_TEAM} teams.`,
+        description: `You can only create up to ${MAX_TEAMS} teams.`,
       });
       return;
     }
@@ -115,37 +110,33 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
 
   const teamList = useMemo(
     () =>
-      teams?.map(team => (
+      teams.map(team => (
         <Button
           key={team.id}
           variant="outline"
           size="lg"
-          className="border-border hover:bg-muted flex w-full items-center justify-between gap-1 rounded-md border p-3 transition"
+          className="flex w-full items-center justify-between gap-1 rounded-md border border-border p-3 transition hover:bg-muted"
           onClick={() => handleAddToTeam(team.id)}
-          aria-label={`Add to ${team.name} team`}>
-          {/* Left Section: Team Info */}
+          aria-label={`Add ${pokemon?.name} to ${team.name} team with ${team.members.length} members`}>
           <div className="flex w-full flex-col items-start">
-            {/* Team Name + Badge */}
             <div className="flex items-center justify-center gap-2">
-              <span className="text-foreground text-sm font-medium">{team.name}</span>
+              <span className="text-sm font-medium text-foreground">{team.name}</span>
               <Badge
                 variant="secondary"
                 className="px-2 py-0 text-xs">
-                {team.members.length}/{MAX_POKEMON_PER_TEAM}
+                {team.members.length}/{MAX_MEMBERS_PER_TEAM}
               </Badge>
             </div>
-
-            {/* Team Members List */}
             {team.members.length > 0 && (
-              <p className="text-muted-foreground line-clamp-2 text-xs leading-tight text-wrap">
-                <span className="text-foreground font-medium">Members:</span>{" "}
-                {team.members.map(member => member.name).join(", ")}
+              <p className="line-clamp-2 text-wrap text-xs leading-tight text-muted-foreground">
+                <span className="font-medium text-foreground">Members:</span>{" "}
+                {team.members.map((member: PokemonInTeam) => member.name).join(", ")}
               </p>
             )}
           </div>
         </Button>
       )),
-    [teams, handleAddToTeam]
+    [teams, pokemon?.name, handleAddToTeam]
   );
 
   return (
@@ -156,21 +147,19 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
         <DialogHeader>
           <DialogTitle>Select a Team</DialogTitle>
           <DialogDescription>
-            Create a new team or add to an existing one (max {MAX_POKEMON_PER_TEAM} Pokemon per
+            Create a new team or add to an existing one (max {MAX_MEMBERS_PER_TEAM} Pokémon per
             team). For more functionality, go to the Team Builder page.
           </DialogDescription>
         </DialogHeader>
-
         <div className="max-h-64 space-y-2 overflow-y-auto">
           {teams.length > 0 ? (
             teamList
           ) : (
-            <div className="text-muted-foreground py-4 text-center">
+            <div className="py-4 text-center text-muted-foreground">
               No teams yet. Create your first team below.
             </div>
           )}
         </div>
-
         <div className="mt-4 flex gap-2">
           <Input
             placeholder="New team name"

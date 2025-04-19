@@ -1,10 +1,10 @@
 import {create} from "zustand";
 import {persist} from "zustand/middleware";
 
-import {MAX_POKEMON_PER_TEAM} from "@/constants";
-import {PokemonInTeam, Team, TypeEffectiveness} from "@/types";
+import {MAX_MEMBERS_PER_TEAM} from "@/constants";
+import {PokemonInTeam, Team, TypeEffectiveness} from "@/types/pokemon";
 
-type TeamStore = {
+interface TeamStore {
   teams: Team[];
   addTeam: (name: string) => string;
   deleteTeam: (id: string) => void;
@@ -12,9 +12,9 @@ type TeamStore = {
   removePokemonFromTeam: (teamId: string, pokemonId: number) => void;
   updateTeamName: (teamId: string, name: string) => void;
   reorderPokemonInTeam: (teamId: string, startIndex: number, endIndex: number) => void;
-};
+}
 
-export const useTeamStore = create<TeamStore>()(
+export const usePokemonTeamsStore = create<TeamStore>()(
   persist(
     (set, get) => ({
       teams: [],
@@ -41,7 +41,7 @@ export const useTeamStore = create<TeamStore>()(
         set(state => {
           const team = state.teams.find(t => t.id === teamId);
           if (!team) return state;
-          if (team.members.length >= MAX_POKEMON_PER_TEAM) return state;
+          if (team.members.length >= MAX_MEMBERS_PER_TEAM) return state;
           if (!pokemon?.types?.length) return state;
           if (team.members.some(p => p.id === pokemon.id)) return state;
           return {
@@ -69,7 +69,7 @@ export const useTeamStore = create<TeamStore>()(
           const teams = state.teams;
           const teamToUpdate = teams.find(t => t.id === teamId);
           if (!teamToUpdate) return state;
-          if (teamToUpdate.name === trimmedName) return state; // No change needed
+          if (teamToUpdate.name === trimmedName) return state;
           if (
             teams.some(t => t.id !== teamId && t.name.toLowerCase() === trimmedName.toLowerCase())
           ) {

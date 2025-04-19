@@ -1,77 +1,97 @@
-import {BrainCircuit, Heart, Shield, Swords, Wind, Zap} from "lucide-react";
+import {Heart, LucideIcon, Shield, ShieldCheck, Sword, Wind, Zap} from "lucide-react";
 
-export const POKEMON_API_BASE_URL = "https://pokeapi.co/api/v2";
-export const POKEMON_END_POINTS = {
-  types: "/type",
-  generations: "/generation",
-  abilities: "/ability?limit=100",
-};
+interface PokemonStat {
+  key: PokemonStatKey;
+  label: string;
+  icon: LucideIcon;
+  colorClass: string;
+  description: string;
+}
+
+export type PokemonStatKey =
+  | "hp"
+  | "attack"
+  | "defense"
+  | "special-attack"
+  | "special-defense"
+  | "speed";
+
+export const MAX_TEAMS = 15;
+export const MAX_MEMBERS_PER_TEAM = 6;
+
+export const MAX_STAT_VALUE = 255;
+export const POKEMON_BASE_URL = "https://pokeapi.co/api/v2";
 export const POKEMON_IMAGE_BASE_URL =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
 
-export const ITEMS_PER_PAGE = 10;
-export const DEBOUNCE_DELAY = 300;
-
-export const POKEMON_BASE_STATS = [
-  {key: "hp", label: "HP", icon: Heart, color: "text-red-500"},
-  {key: "attack", label: "Attack", icon: Swords, color: "text-orange-500"},
-  {key: "defense", label: "Defense", icon: Shield, color: "text-blue-500"},
+export const POKEMON_BASE_STATS: PokemonStat[] = [
+  {
+    key: "hp",
+    label: "HP",
+    icon: Heart,
+    colorClass: "text-red-500",
+    description:
+      "Hit Points – represents the total health of the Pokémon. When it drops to 0, the Pokémon faints.",
+  },
+  {
+    key: "attack",
+    label: "Attack",
+    icon: Sword,
+    colorClass: "text-orange-500",
+    description:
+      "Determines how much physical damage the Pokémon can inflict using physical moves.",
+  },
+  {
+    key: "defense",
+    label: "Defense",
+    icon: Shield,
+    colorClass: "text-yellow-500",
+    description: "Reduces physical damage taken from opponents' physical attacks.",
+  },
   {
     key: "special-attack",
-    label: "Sp. Attack",
+    label: "Sp. Atk",
     icon: Zap,
-    color: "text-yellow-500",
+    colorClass: "text-blue-500",
+    description: "Determines the strength of special (non-physical) moves used by the Pokémon.",
   },
   {
     key: "special-defense",
-    label: "Sp. Defense",
-    icon: BrainCircuit,
-    color: "text-green-500",
+    label: "Sp. Def",
+    icon: ShieldCheck,
+    colorClass: "text-green-500",
+    description: "Reduces damage received from special (non-physical) attacks.",
   },
-  {key: "speed", label: "Speed", icon: Wind, color: "text-purple-500"},
+  {
+    key: "speed",
+    label: "Speed",
+    icon: Wind,
+    colorClass: "text-purple-500",
+    description: "Determines which Pokémon moves first in battle; higher speed attacks first.",
+  },
 ];
 
-export const getMaxStat = (stat: string) => {
-  const maxStats: Record<string, number> = {
-    hp: 255,
-    attack: 190,
-    defense: 230,
-    "special-attack": 194,
-    "special-defense": 230,
-    speed: 180,
-  };
-  return maxStats[stat] || 255;
+export const TYPE_COLOR_MAP: Record<string, string> = {
+  normal: "bg-neutral-400",
+  fire: "bg-orange-500",
+  water: "bg-sky-500",
+  electric: "bg-amber-400",
+  grass: "bg-emerald-500",
+  ice: "bg-cyan-300",
+  fighting: "bg-rose-600",
+  poison: "bg-violet-500",
+  ground: "bg-yellow-700",
+  flying: "bg-indigo-300",
+  psychic: "bg-pink-400",
+  bug: "bg-lime-500",
+  rock: "bg-yellow-800",
+  ghost: "bg-purple-700",
+  dragon: "bg-indigo-600",
+  dark: "bg-zinc-700",
+  steel: "bg-slate-500",
+  fairy: "bg-pink-300",
 };
 
-export const getTypeColor = (type: string) => {
-  const typeColors: Record<string, string> = {
-    normal: "bg-stone-200 text-stone-700",
-    fire: "bg-orange-200 text-orange-800",
-    water: "bg-blue-200 text-blue-800",
-    electric: "bg-yellow-200 text-yellow-800",
-    grass: "bg-green-200 text-green-800",
-    ice: "bg-cyan-200 text-cyan-800",
-    fighting: "bg-red-200 text-red-800",
-    poison: "bg-purple-200 text-purple-800",
-    ground: "bg-amber-200 text-amber-800",
-    flying: "bg-indigo-200 text-indigo-800",
-    psychic: "bg-pink-200 text-pink-800",
-    bug: "bg-lime-200 text-lime-800",
-    rock: "bg-stone-300 text-stone-800",
-    ghost: "bg-violet-200 text-violet-800",
-    dragon: "bg-violet-300 text-violet-900",
-    dark: "bg-gray-800 text-gray-200",
-    steel: "bg-slate-200 text-slate-800",
-    fairy: "bg-pink-300 text-pink-900",
-  };
-  return typeColors[type] || "bg-gray-200 text-gray-700";
+export const getPokemonTypeBgClass = (type: string): string => {
+  return TYPE_COLOR_MAP[type.toLowerCase()] || "bg-gray-300";
 };
-
-export const CATEGORY_COLORS: Record<string, string> = {
-  physical: "bg-orange-500 dark:bg-orange-600",
-  special: "bg-indigo-500 dark:bg-indigo-600",
-  status: "bg-emerald-500 dark:bg-emerald-600",
-};
-
-export const MAX_TEAM = 15;
-export const MAX_POKEMON_PER_TEAM = 6;

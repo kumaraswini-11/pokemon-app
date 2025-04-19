@@ -1,6 +1,7 @@
 "use client";
 
 import {useRouter} from "next/navigation";
+import React from "react";
 
 import {LogOut, Send, Settings} from "lucide-react";
 import {toast} from "sonner";

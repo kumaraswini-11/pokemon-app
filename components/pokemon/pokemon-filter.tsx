@@ -1,331 +1,279 @@
 "use client";
 
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useState} from "react";
 
-import {Info, RefreshCw} from "lucide-react";
+import {RefreshCw} from "lucide-react";
+import {motion} from "motion/react";
 
-import {MultiSelect} from "@/components/shared/multi-select";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Label} from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {Separator} from "@/components/ui/separator";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Slider} from "@/components/ui/slider";
-import {POKEMON_BASE_STATS, getTypeColor} from "@/constants";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {POKEMON_BASE_STATS, getPokemonTypeBgClass} from "@/constants";
 import {
   usePokemonAbilities,
   usePokemonGenerations,
   usePokemonTypes,
 } from "@/hooks/use-pokemon-queries";
 import {cn} from "@/lib/utils";
+import {usePokemonFilterStore} from "@/store/filters";
+import {SelectOption} from "@/types/pokemon";
 
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "../ui/tooltip";
+import {ComboboxWithOptionalMultiSelect} from "../shared/combobox-with-optional-multi-select";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "../ui/tabs";
 
-export interface StatFilter {
-  stat: string;
-  min: number;
-  max: number;
-}
-
-export interface FilterState {
-  search: string;
-  types: string[];
-  abilities: string[];
-  generation: string | null;
-  stats: StatFilter[];
-}
-
-export interface PokemonFiltersProps {
-  filterState: FilterState;
-  setFilterState: (state: FilterState) => void;
-  isLoading?: boolean;
-  setIsLoading?: (loading: boolean) => void;
-  className?: string;
-}
-
-const DEFAULT_STATS: StatFilter[] = POKEMON_BASE_STATS.map(({key}) => ({
-  stat: key,
-  min: 0,
-  max: 255,
-}));
-
-const FilterSkeleton: React.FC<{count?: number; height?: string}> = ({
-  count = 1,
-  height = "h-10",
-}) => (
-  <div className="space-y-2">
-    {Array.from({length: count}, (_, i) => (
-      <Skeleton
-        key={i}
-        className={`${height} w-full`}
-      />
-    ))}
-  </div>
-);
-
-export const PokemonFilters: React.FC<PokemonFiltersProps> = ({
-  filterState,
-  setFilterState,
-  isLoading = false,
-  className,
-}) => {
+export const PokemonFilters: React.FC = () => {
+  const {filters, setFilters, resetFilters} = usePokemonFilterStore();
   const [isResetting, setIsResetting] = useState(false);
 
-  const defaultFilterState = useMemo(
-    () => ({
-      search: "",
-      types: [],
-      abilities: [],
-      generation: null,
-      stats: DEFAULT_STATS,
-    }),
-    []
-  );
-
-  const updateFilter = useCallback(
-    <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
-      setFilterState({...filterState, [key]: value});
-    },
-    [filterState, setFilterState]
-  );
+  const {data: types, isLoading: typesLoading, isError: typesError} = usePokemonTypes();
+  const {
+    data: generations,
+    isLoading: generationsLoading,
+    isError: generationsError,
+  } = usePokemonGenerations();
+  const {
+    data: abilities,
+    isLoading: abilitiesLoading,
+    isError: abilitiesError,
+  } = usePokemonAbilities();
 
   const updateStatRange = useCallback(
     (stat: string, values: number[]) => {
-      const [min, max] = values;
-      setFilterState({
-        ...filterState,
-        stats: filterState.stats.map(s => (s.stat === stat ? {...s, min, max} : s)),
+      const [min] = values; // Slider provides single value for min (max is fixed at 255)
+      setFilters({
+        stats: filters.stats.map(s => (s.stat === stat ? {...s, min} : s)),
       });
     },
-    [filterState, setFilterState]
+    [filters.stats, setFilters]
   );
 
-  const resetFilters = useCallback(() => {
+  const resetFiltersWithDelay = useCallback(() => {
     setIsResetting(true);
-    setFilterState(defaultFilterState);
-
-    // Small delay to show "Resetting..." state, then re-enable filters
+    resetFilters();
     setTimeout(() => setIsResetting(false), 150);
-  }, [setFilterState, defaultFilterState]);
+  }, [resetFilters]);
 
-  const GenerationFilter: React.FC = () => {
-    const {data: generations, isLoading, isError} = usePokemonGenerations();
-    return (
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Generation</Label>
-        {isLoading ? (
-          <FilterSkeleton />
-        ) : isError ? (
-          <p className="text-destructive text-sm">Error loading generations</p>
-        ) : (
-          <Select
-            value={filterState.generation || ""}
-            onValueChange={value => updateFilter("generation", value || null)}
-            disabled={isLoading || isResetting}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All Generations" />
-            </SelectTrigger>
-            <SelectContent>
-              {/* <SelectItem value="">All Generations</SelectItem> */}
-              {generations?.map(gen => (
-                <SelectItem
-                  key={gen}
-                  value={gen}>
-                  {gen.replace("-", " ").toUpperCase()}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-    );
-  };
+  const generationOptions: SelectOption[] =
+    generations?.map(gen => ({
+      value: gen,
+      label: gen.replace("-", " ").toUpperCase(),
+    })) || [];
 
-  const TypeFilter: React.FC = () => {
-    const {data: types, isLoading, isError} = usePokemonTypes();
-    const typeOptions = useMemo(
-      () =>
-        types?.map(type => ({
-          label: type.charAt(0).toUpperCase() + type.slice(1),
-          value: type,
-        })) || [],
-      [types]
-    );
-    return (
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Types</Label>
-        {isLoading ? (
-          <FilterSkeleton />
-        ) : isError ? (
-          <p className="text-destructive text-sm">Error loading types</p>
-        ) : (
-          <>
-            <MultiSelect
-              options={typeOptions}
-              onValueChange={values => updateFilter("types", values)}
-              defaultValue={filterState.types}
-              placeholder="Select types..."
-              disabled={isLoading || isResetting}
-            />
-            {filterState.types.length > 0 && (
-              <div className="mt-1 flex flex-wrap gap-1">
-                {filterState.types.map(type => (
-                  <Badge
-                    key={type}
-                    variant="secondary"
-                    className={cn(getTypeColor(type), "text-xs")}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    );
-  };
+  const typeOptions: SelectOption[] =
+    types?.map(type => ({
+      value: type,
+      label: type.charAt(0).toUpperCase() + type.slice(1),
+    })) || [];
 
-  const AbilityFilter: React.FC = () => {
-    const {data: abilities, isLoading, isError} = usePokemonAbilities();
-    const abilityOptions = useMemo(
-      () =>
-        abilities?.map(ability => ({
-          label: ability
-            .split("-")
-            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(" "),
-          value: ability,
-        })) || [],
-      [abilities]
-    );
-    return (
-      <div className="space-y-2">
-        <Label className="text-sm font-medium">Abilities</Label>
-        {isLoading ? (
-          <FilterSkeleton />
-        ) : isError ? (
-          <p className="text-destructive text-sm">Error loading abilities</p>
-        ) : (
-          <>
-            <MultiSelect
-              options={abilityOptions}
-              onValueChange={values => updateFilter("abilities", values)}
-              defaultValue={filterState.abilities}
-              placeholder="Select abilities..."
-              disabled={isLoading || isResetting}
-            />
-            {filterState.abilities.length > 0 && (
-              <div className="mt-1 flex flex-wrap gap-1">
-                {filterState.abilities.map(ability => (
-                  <Badge
-                    key={ability}
-                    variant="secondary"
-                    className="text-xs">
-                    {ability
-                      .split("-")
-                      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-                      .join(" ")}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    );
-  };
+  const abilityOptions: SelectOption[] =
+    abilities?.map(ability => ({
+      value: ability,
+      label: ability
+        .split("-")
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" "),
+    })) || [];
 
-  const StatFilter: React.FC = () => (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium">Base Stats</Label>
-      <Card className="border-0 p-0 shadow-none">
-        <CardContent className="bg-muted/40 space-y-4 rounded-lg p-3">
-          {POKEMON_BASE_STATS.map(({key, label, icon: Icon, color}) => {
-            const statFilter = filterState.stats.find(s => s.stat === key);
-            return (
-              <div
-                key={key}
-                className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Icon className={`h-4 w-4 ${color}`} />
-                    <span className="text-xs capitalize">{label}</span>
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className="h-5 font-mono text-xs">
-                    {statFilter?.min ?? 0}-{statFilter?.max ?? 255}
-                  </Badge>
-                </div>
-                <Slider
-                  value={[statFilter?.min ?? 0]}
-                  min={0}
-                  max={255}
-                  step={1}
-                  onValueChange={values => updateStatRange(key, values)}
-                  disabled={isLoading || isResetting}
-                />
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
-    </div>
-  );
+  const FilterSkeleton: React.FC = () => <Skeleton className="h-10 w-full" />;
 
   return (
-    <Card className={cn("rounded-m w-full min-w-[22rem]", className)}>
-      <CardHeader className="px-4 py-0">
+    <Card className="w-full min-w-[22rem] rounded-xl py-4">
+      <CardHeader className="px-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <CardTitle className="flex items-center justify-start gap-1.5 text-lg">
-              <span>Pokemon Filters</span>
-
-              {/* Tooltip  */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="text-muted-foreground mt-1 size-3.5 cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      We currently only support filtering on desktop. Mobile filtering coming soon!
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </CardTitle>
-            <CardDescription>Fine-tune your Pokemon search</CardDescription>
+            <CardTitle className="text-lg">Pokémon Filters</CardTitle>
+            <CardDescription>Fine-tune your Pokémon search</CardDescription>
           </div>
           <Button
             variant="outline"
             size="sm"
-            onClick={resetFilters}
-            disabled={isLoading || isResetting}
+            onClick={resetFiltersWithDelay}
+            disabled={isResetting}
             className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 gap-1 text-xs">
-            <RefreshCw
-              className={`size-3 ${isResetting ? "animate-spin" : "group-hover:rotate-90"}`}
-            />
+            <RefreshCw className={cn("size-3", isResetting && "animate-spin")} />
             {isResetting ? "Resetting..." : "Reset"}
           </Button>
         </div>
       </CardHeader>
+
       <Separator />
-      <CardContent className="px-4 py-0">
-        <div className="space-y-2.5">
-          <GenerationFilter />
-          <TypeFilter />
-          <AbilityFilter />
-          <StatFilter />
-        </div>
+      <CardContent className="px-4">
+        <Tabs
+          defaultValue="filters"
+          className="w-full">
+          <TabsList className="w-full grid grid-cols-2 mb-4">
+            <TabsTrigger value="filters">Basic Filters</TabsTrigger>
+            <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          </TabsList>
+
+          {/* Filters Tab */}
+          <TabsContent value="filters">
+            <motion.div
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              className="space-y-4">
+              {/* Generation Filter */}
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Generation</Label>
+                {generationsLoading ? (
+                  <FilterSkeleton />
+                ) : generationsError ? (
+                  <p className="text-destructive text-sm">Error loading generations</p>
+                ) : (
+                  <ComboboxWithOptionalMultiSelect
+                    options={generationOptions}
+                    isMultiSelect={false}
+                    selectedOptions={
+                      filters.generation
+                        ? generationOptions.filter(opt => opt.value === filters.generation)
+                        : []
+                    }
+                    onChange={opts => setFilters({generation: opts[0]?.value || null})}
+                    placeholder="Select generation..."
+                    name="generation"
+                    disabled={isResetting}
+                    searchPlaceholder="Search generations..."
+                  />
+                )}
+              </div>
+
+              {/* Type Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Types</Label>
+                {typesLoading ? (
+                  <FilterSkeleton />
+                ) : typesError ? (
+                  <p className="text-destructive text-sm">Error loading types</p>
+                ) : (
+                  <>
+                    <ComboboxWithOptionalMultiSelect
+                      options={typeOptions}
+                      isMultiSelect
+                      selectedOptions={typeOptions.filter(opt => filters.types.includes(opt.value))}
+                      onChange={opts => setFilters({types: opts.map(opt => opt.value)})}
+                      placeholder="Select types..."
+                      name="types"
+                      disabled={isResetting}
+                      searchPlaceholder="Search types..."
+                    />
+                    {filters.types.length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {filters.types.map(type => (
+                          <Badge
+                            key={type}
+                            variant="secondary"
+                            className={cn(getPokemonTypeBgClass(type), "text-xs capitalize")}>
+                            {type}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Ability Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Abilities</Label>
+                {abilitiesLoading ? (
+                  <FilterSkeleton />
+                ) : abilitiesError ? (
+                  <p className="text-destructive text-sm">Error loading abilities</p>
+                ) : (
+                  <>
+                    <ComboboxWithOptionalMultiSelect
+                      options={abilityOptions}
+                      isMultiSelect
+                      selectedOptions={abilityOptions.filter(opt =>
+                        filters.abilities.includes(opt.value)
+                      )}
+                      onChange={opts => setFilters({abilities: opts.map(opt => opt.value)})}
+                      placeholder="Select abilities..."
+                      name="abilities"
+                      disabled={isResetting}
+                      searchPlaceholder="Search abilities..."
+                    />
+                    {filters.abilities.length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {filters.abilities.map(ability => (
+                          <Badge
+                            key={ability}
+                            variant="secondary"
+                            className="text-xs capitalize">
+                            {ability
+                              .split("-")
+                              .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                              .join(" ")}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </TabsContent>
+
+          {/* Advanced Tab */}
+          <TabsContent value="advanced">
+            <motion.div
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              className="space-y-4">
+              {/* Stat Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Base Stats</Label>
+                <Card className="border-0 p-0 shadow-none">
+                  <CardContent className="bg-muted/40 space-y-4 rounded-lg p-3">
+                    {POKEMON_BASE_STATS.map(({key, label, icon: Icon, colorClass, description}) => {
+                      const statFilter = filters.stats.find(s => s.stat === key);
+                      return (
+                        <div
+                          key={key}
+                          className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-2 cursor-help">
+                                    <Icon className={cn("h-4 w-4", colorClass)} />
+                                    <span className="text-xs capitalize">{label}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{description}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <Badge
+                              variant="outline"
+                              className="h-5 font-mono text-xs">
+                              {statFilter?.min ?? 0}-255
+                            </Badge>
+                          </div>
+                          <Slider
+                            value={[statFilter?.min ?? 0]}
+                            min={0}
+                            max={255}
+                            step={1}
+                            onValueChange={values => updateStatRange(key, values)}
+                            disabled={isResetting}
+                          />
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              </div>
+            </motion.div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );

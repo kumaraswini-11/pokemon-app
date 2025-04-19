@@ -1,39 +1,60 @@
 "use client";
 
-import React, {ChangeEvent} from "react";
+import React, {useEffect, useState} from "react";
 
-import {Search} from "lucide-react";
+import {Search, X} from "lucide-react";
 
+import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-import {cn} from "@/lib/utils";
+import useDebounce from "@/hooks/use-debounce";
+import {usePokemonFilterStore} from "@/store/filters";
 
-interface SearchInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  className?: string;
-}
+export const SearchInput: React.FC = () => {
+  const {filters, setFilters} = usePokemonFilterStore();
+  const [searchValue, setSearchValue] = useState(filters.search || "");
 
-export const SearchInput: React.FC<SearchInputProps> = ({
-  value,
-  onChange,
-  placeholder = "Search Pokemon by name...",
-  className = "",
-}) => {
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
+  const debouncedSearch = useDebounce(searchValue, 300);
+
+  useEffect(() => {
+    if (debouncedSearch !== filters.search) {
+      setFilters({search: debouncedSearch.trim()});
+
+      // if (debouncedSearch.trim()) {
+      //   toast.info("Search Applied", {
+      //     description: `Filtering Pokémon by "${debouncedSearch.trim()}"`,
+      //   });
+      // }
+    }
+  }, [debouncedSearch, filters.search, setFilters]);
+
+  const handleClear = () => {
+    setSearchValue("");
+    if (filters.search) {
+      setFilters({search: ""});
+    }
   };
 
   return (
-    <div className={cn("relative w-full", className)}>
-      <Search className="text-muted-foreground absolute top-1/2 left-4 size-4 -translate-y-1/2" />
+    <div className="relative w-full">
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
-        value={value}
-        onChange={handleInputChange}
-        placeholder={placeholder}
-        className="h-11 w-full pl-11"
-        type="search"
+        type="text"
+        placeholder="Search Pokémon by name..."
+        value={searchValue}
+        onChange={e => setSearchValue(e.target.value)}
+        className="pl-10 pr-10"
+        aria-label="Search Pokémon by name"
       />
+      {searchValue && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
+          onClick={handleClear}
+          aria-label="Clear search">
+          <X className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 };

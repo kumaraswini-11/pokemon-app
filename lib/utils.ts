@@ -2,7 +2,7 @@ import axios from "axios";
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
 
-import {POKEMON_API_BASE_URL} from "@/constants";
+import {POKEMON_BASE_URL} from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,7 +20,7 @@ export function formatPokemonId(id: number, length?: number, padChar?: string): 
 
 // Base configuration for API requests
 export const api = axios.create({
-  baseURL: POKEMON_API_BASE_URL,
+  baseURL: POKEMON_BASE_URL,
   timeout: 10 * 1000, // 10 seconds timeout
   headers: {
     "Content-Type": "application/json",

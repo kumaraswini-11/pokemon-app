@@ -32,7 +32,7 @@ import {
   TeamAnalysisProps,
   TeamCardProps,
   TeamGridProps,
-} from "@/types";
+} from "@/types/pokemon";
 
 const ITEM_TYPE = "POKEMON";
 

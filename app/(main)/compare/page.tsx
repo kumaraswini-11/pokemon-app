@@ -26,7 +26,7 @@ import {
   usePokemonTypeEffectiveness,
 } from "@/hooks/use-pokemon-queries";
 import {cn} from "@/lib/utils";
-import {PokemonData} from "@/types";
+import {PokemonData} from "@/types/pokemon";
 
 interface ComparisonPokemon {
   id: string;

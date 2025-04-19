@@ -13,13 +13,7 @@ import {Progress} from "@/components/ui/progress";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Separator} from "@/components/ui/separator";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {
-  CATEGORY_COLORS,
-  POKEMON_BASE_STATS,
-  POKEMON_IMAGE_BASE_URL,
-  getMaxStat,
-  getTypeColor,
-} from "@/constants";
+import {POKEMON_IMAGE_BASE_URL, getPokemonTypeBgClass} from "@/constants";
 import {usePokemonDetails} from "@/hooks/use-pokemon-queries";
 import {cn} from "@/lib/utils";
 
@@ -97,7 +91,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
                         variant="outline"
                         className={cn(
                           "px-3 py-1 text-sm font-medium capitalize",
-                          getTypeColor(type)
+                          getPokemonTypeBgClass(type)
                         )}>
                         {type}
                       </Badge>
@@ -167,7 +161,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground font-medium">Base Exp:</span>
-                  <span>{data.baseExperience || "N/A"}</span>
+                  {/* <span>{data.baseExperience || "N/A"}</span> */}
                 </div>
               </div>
 
@@ -219,7 +213,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
             <CardContent>
               <div className="space-y-3">
                 {data.stats.map(stat => {
-                  const maxValue = getMaxStat(stat.stat);
+                  const maxValue = 255;
                   const percentage = (stat.value / maxValue) * 100;
                   let progressColor = "bg-red-500 dark:bg-red-600";
 
@@ -230,7 +224,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
                   }
 
                   // Only to show the icon
-                  const baseStat = POKEMON_BASE_STATS.find(s => s.key === stat.stat);
+                  // const baseStat = POKEMON_BASE_STATS.find(s => s.key === stat.stat);
 
                   return (
                     <div
@@ -238,7 +232,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
                       className="space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          {baseStat && <baseStat.icon className={`${baseStat.color} size-4`} />}
+                          {/* {baseStat && <baseStat.icon className={`${baseStat.color} size-4`} />} */}
                           <span className="text-muted-foreground text-sm capitalize">
                             {stat.stat.replace("-", " ")}
                           </span>
@@ -364,16 +358,16 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({name}) => {
                           <td className="px-3 py-1.5">
                             <Badge
                               variant="outline"
-                              className={cn("px-1.5 py-0.5 text-xs", getTypeColor(move.type))}>
+                              className={cn(
+                                "px-1.5 py-0.5 text-xs",
+                                getPokemonTypeBgClass(move.type)
+                              )}>
                               {move.type}
                             </Badge>
                           </td>
                           <td className="px-3 py-1.5">
                             <Badge
-                              className={cn(
-                                "px-1.5 py-0.5 text-xs text-white",
-                                CATEGORY_COLORS[move.category]
-                              )}>
+                              className={cn("px-1.5 py-0.5 text-xs text-white", move.category)}>
                               {move.category}
                             </Badge>
                           </td>
