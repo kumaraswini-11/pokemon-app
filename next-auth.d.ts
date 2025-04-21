@@ -14,14 +14,12 @@ declare module "next-auth" {
       // email?: string | null;
       role?: string;
     } & DefaultSession["user"];
-    accessToken?: string;
     error?: string; // Explicitly define error as string or undefined
   }
 
   interface JWT {
     id?: string;
     name?: string | null;
-    accessToken?: string;
     error?: string; // Ensure JWT token error is also typed as string
   }
 

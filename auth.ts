@@ -101,14 +101,11 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
       if (user) {
         token.id = user.id;
         token.name = user.name;
-        // // Persist the OAuth access_token to the token right after signin
-        if (account) {
+
+        // If using Google, store the access token
+        if (account?.provider === "google") {
           token.accessToken = account.access_token;
         }
-      }
-      // Example: Handle token errors (e.g., expired token)
-      if (account?.provider === "google" && !account.access_token) {
-        token.error = "OAuthTokenError";
       }
       return token;
     },
@@ -122,8 +119,6 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
         session.error = String(token.error);
       }
 
-      // Send properties to the client, like an access_token from a provider.
-      session.accessToken = token.accessToken as string;
       return session;
     },
     async signIn({account, profile}) {
