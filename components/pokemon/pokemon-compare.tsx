@@ -98,7 +98,7 @@ const PokemonSelector = ({
                 <span className="capitalize">{selectedOption.label}</span>
               ) : (
                 <span className="text-muted-foreground">
-                  Select {side === "left" ? "Left" : "Right"} Pokémon
+                  Select {side === "left" ? "Left" : "Right"} Pokemon
                 </span>
               )}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -109,13 +109,13 @@ const PokemonSelector = ({
             align="start">
             <Command shouldFilter={false}>
               <CommandInput
-                placeholder="Search Pokémon..."
+                placeholder="Search Pokemon..."
                 value={searchQuery}
                 onValueChange={setSearchQuery}
                 className="h-9"
               />
               <CommandList className="max-h-[300px] overflow-auto">
-                <CommandEmpty>No Pokémon found.</CommandEmpty>
+                <CommandEmpty>No Pokemon found.</CommandEmpty>
                 <CommandGroup>
                   {filteredOptions.slice(0, 100).map(option => (
                     <CommandItem
@@ -169,7 +169,7 @@ const PokemonPreview = ({
           <h2 className="text-sm font-semibold text-white capitalize">
             {pokemon
               ? `${pokemon.name} #${String(pokemon.id).padStart(3, "0")}`
-              : "No Pokémon Selected"}
+              : "No Pokemon Selected"}
           </h2>
         )}
         {pokemon && (
@@ -178,7 +178,7 @@ const PokemonPreview = ({
             size="sm"
             onClick={onClear}
             className="text-white hover:text-white/80 hover:bg-white/10"
-            aria-label={`Clear ${side} Pokémon selection`}>
+            aria-label={`Clear ${side} Pokemon selection`}>
             <X className="h-4 w-4" />
           </Button>
         )}
@@ -193,7 +193,7 @@ const PokemonPreview = ({
         </div>
       ) : error ? (
         <div className="flex h-32 items-center justify-center text-xs text-destructive">
-          Error loading Pokémon
+          Error loading Pokemon
         </div>
       ) : pokemon ? (
         <div className="space-y-2">
@@ -235,7 +235,7 @@ const PokemonPreview = ({
         </div>
       ) : (
         <div className="flex h-32 items-center justify-center text-xs text-muted-foreground">
-          Select a Pokémon
+          Select a Pokemon
         </div>
       )}
     </CardContent>
@@ -515,7 +515,7 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
 
   const [leftPokemonId, rightPokemonId] = selectedPokemon;
 
-  // Get the Pokémon name from the ID
+  // Get the Pokemon name from the ID
   const leftPokemonName = useMemo(
     () =>
       leftPokemonId ? pokemonList.find(p => p.id.toString() === leftPokemonId)?.name || "" : "",
@@ -528,7 +528,7 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
     [rightPokemonId, pokemonList]
   );
 
-  // Fetch Pokémon details
+  // Fetch Pokemon details
   const {
     data: leftPokemonData,
     isLoading: isLeftLoading,
@@ -578,7 +578,7 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
       animate={{opacity: 1}}
       transition={{duration: 0.5}}
       aria-live="polite">
-      <h1 className="mb-6 text-center text-xl font-bold text-foreground">Pokémon Comparison</h1>
+      <h1 className="mb-6 text-center text-xl font-bold text-foreground">Pokemon Comparison</h1>
 
       {/* Selection Controls */}
       <div className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -600,12 +600,12 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
                   size="icon"
                   onClick={handleSwapPositions}
                   disabled={!leftPokemonId && !rightPokemonId}
-                  aria-label="Swap Pokémon positions"
+                  aria-label="Swap Pokemon positions"
                   className="rounded-full">
                   <ArrowLeftRight size={16} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Swap Pokémon</TooltipContent>
+              <TooltipContent>Swap Pokemon</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </motion.div>
@@ -681,7 +681,7 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
                     />
                   ) : (
                     <div className="py-8 text-center text-sm text-muted-foreground">
-                      Select both Pokémon to compare stats
+                      Select both Pokemon to compare stats
                     </div>
                   )}
                 </TabsContent>
@@ -696,7 +696,7 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
                     />
                   ) : (
                     <div className="py-8 text-center text-sm text-muted-foreground">
-                      Select both Pokémon to compare types
+                      Select both Pokemon to compare types
                     </div>
                   )}
                 </TabsContent>
@@ -708,7 +708,7 @@ export function PokemonComparisonClient({pokemonList}: PokemonComparisonProps) {
                     />
                   ) : (
                     <div className="py-8 text-center text-sm text-muted-foreground">
-                      Select both Pokémon to compare moves
+                      Select both Pokemon to compare moves
                     </div>
                   )}
                 </TabsContent>

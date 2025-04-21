@@ -96,8 +96,8 @@ export const PokemonFilters: React.FC = () => {
       <CardHeader className="px-4">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <CardTitle className="text-lg">Pokémon Filters</CardTitle>
-            <CardDescription>Fine-tune your Pokémon search</CardDescription>
+            <CardTitle className="text-lg">Pokemon Filters</CardTitle>
+            <CardDescription>Fine-tune your Pokemon search</CardDescription>
           </div>
           <Button
             variant="outline"

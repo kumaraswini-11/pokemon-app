@@ -31,7 +31,7 @@ export const POKEMON_BASE_STATS: PokemonStat[] = [
     icon: Heart,
     colorClass: "text-red-500",
     description:
-      "Hit Points – represents the total health of the Pokémon. When it drops to 0, the Pokémon faints.",
+      "Hit Points – represents the total health of the Pokemon. When it drops to 0, the Pokemon faints.",
   },
   {
     key: "attack",
@@ -39,7 +39,7 @@ export const POKEMON_BASE_STATS: PokemonStat[] = [
     icon: Sword,
     colorClass: "text-orange-500",
     description:
-      "Determines how much physical damage the Pokémon can inflict using physical moves.",
+      "Determines how much physical damage the Pokemon can inflict using physical moves.",
   },
   {
     key: "defense",
@@ -53,7 +53,7 @@ export const POKEMON_BASE_STATS: PokemonStat[] = [
     label: "Sp. Atk",
     icon: Zap,
     colorClass: "text-blue-500",
-    description: "Determines the strength of special (non-physical) moves used by the Pokémon.",
+    description: "Determines the strength of special (non-physical) moves used by the Pokemon.",
   },
   {
     key: "special-defense",
@@ -67,7 +67,7 @@ export const POKEMON_BASE_STATS: PokemonStat[] = [
     label: "Speed",
     icon: Wind,
     colorClass: "text-purple-500",
-    description: "Determines which Pokémon moves first in battle; higher speed attacks first.",
+    description: "Determines which Pokemon moves first in battle; higher speed attacks first.",
   },
 ];
 

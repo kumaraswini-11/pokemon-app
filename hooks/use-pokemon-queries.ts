@@ -197,7 +197,7 @@ export const usePokemonTypeEffectiveness = () => {
 //       const offset = pageParam * LIMIT;
 //       const {data} = await get<PokemonListApiResponse>("/pokemon", {LIMIT, offset});
 
-//       // Fetch detailed data for each Pokémon
+//       // Fetch detailed data for each Pokemon
 //       const detailedResults = await Promise.all(
 //         data.results.map(async p => {
 //           const {data: details} = await get<any>(p.url);

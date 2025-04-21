@@ -21,7 +21,7 @@ export const SearchInput: React.FC = () => {
 
       // if (debouncedSearch.trim()) {
       //   toast.info("Search Applied", {
-      //     description: `Filtering Pokémon by "${debouncedSearch.trim()}"`,
+      //     description: `Filtering Pokemon by "${debouncedSearch.trim()}"`,
       //   });
       // }
     }
@@ -39,11 +39,11 @@ export const SearchInput: React.FC = () => {
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         type="text"
-        placeholder="Search Pokémon by name..."
+        placeholder="Search Pokemon by name..."
         value={searchValue}
         onChange={e => setSearchValue(e.target.value)}
         className="pl-10 pr-10"
-        aria-label="Search Pokémon by name"
+        aria-label="Search Pokemon by name"
       />
       {searchValue && (
         <Button

@@ -67,7 +67,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({id}) => {
       <Card className="container mx-auto max-w-5xl rounded-xl p-6 text-center">
         <CardContent>
           <InfoIcon className="text-destructive mx-auto mb-2 h-8 w-8" />
-          <p className="text-destructive font-medium">Failed to load Pokémon details.</p>
+          <p className="text-destructive font-medium">Failed to load Pokemon details.</p>
           <div className="mt-4 flex justify-center gap-2">
             <Button
               variant="outline"
@@ -75,7 +75,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({id}) => {
               Retry
             </Button>
             <Button asChild>
-              <Link href="/pokedex">Back to Pokédex</Link>
+              <Link href="/pokedex">Back to Pokedex</Link>
             </Button>
           </div>
         </CardContent>
@@ -191,7 +191,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({id}) => {
                     <Button
                       size="icon"
                       variant="outline"
-                      aria-label="Share Pokémon"
+                      aria-label="Share Pokemon"
                       onClick={() => toast.info("Sharing coming soon!")}>
                       <Share2 className="size-4" />
                     </Button>
@@ -202,7 +202,7 @@ export const PokemonDetails: React.FC<PokemonDetailsProps> = ({id}) => {
                     <Button
                       size="icon"
                       variant="outline"
-                      aria-label="Download Pokémon data"
+                      aria-label="Download Pokemon data"
                       onClick={() => toast.info("Download coming soon!")}>
                       <Download className="size-4" />
                     </Button>

@@ -104,7 +104,7 @@ export default function TeamBuilderPage() {
             <div className="space-y-0.5">
               <h2 className="text-xl font-semibold tracking-tight">Team Builder</h2>
               <p className="text-muted-foreground text-xs">
-                Organize your Pokémon roster into strategic teams
+                Organize your Pokemon roster into strategic teams
               </p>
             </div>
             <motion.div
@@ -215,7 +215,7 @@ function EmptyState({onAddTeam}: {onAddTeam: () => void}) {
         </motion.div>
         <h3 className="mb-1 text-base font-medium">No teams yet</h3>
         <p className="text-muted-foreground mb-2 max-w-md text-xs">
-          Create your first team to start organizing your Pokémon roster
+          Create your first team to start organizing your Pokemon roster
         </p>
         <motion.div
           whileHover={{scale: 1.05}}
@@ -407,9 +407,9 @@ const TeamCard = ({team, typeEffectiveness, onRemove}: TeamCardProps) => {
               </ul>
             ) : (
               <div className="rounded-md border border-dashed p-1.5 text-center">
-                <p className="text-muted-foreground text-xs font-medium">No Pokémon in this team</p>
+                <p className="text-muted-foreground text-xs font-medium">No Pokemon in this team</p>
                 <p className="text-muted-foreground text-[10px]">
-                  Drag Pokémon here or click the + button to add
+                  Drag Pokemon here or click the + button to add
                 </p>
               </div>
             )}
@@ -419,7 +419,7 @@ const TeamCard = ({team, typeEffectiveness, onRemove}: TeamCardProps) => {
               <TeamAnalysis analysis={analysis} />
             ) : (
               <div className="text-muted-foreground w-full text-center text-xs italic">
-                Add at least one Pokémon to see team analysis.
+                Add at least one Pokemon to see team analysis.
               </div>
             )}
           </CardFooter>

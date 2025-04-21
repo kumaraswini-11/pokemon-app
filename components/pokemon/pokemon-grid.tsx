@@ -101,7 +101,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({pokemon}) => {
         <Badge
           variant="secondary"
           className="px-4 py-1.5 text-sm">
-          No Pokémon found with current filters.
+          No Pokemon found with current filters.
         </Badge>
       </div>
     );
@@ -112,7 +112,7 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({pokemon}) => {
       <div
         className="grid grid-cols-[repeat(auto-fit,minmax(295px,1fr))] gap-2"
         role="grid"
-        aria-label="Pokémon grid">
+        aria-label="Pokemon grid">
         {filteredPokemon.slice(0, displayCount).map((p, i) => (
           <PokemonCard
             key={p.id}
@@ -127,15 +127,15 @@ export const PokemonGrid: React.FC<PokemonGridProps> = ({pokemon}) => {
         aria-live="polite">
         {displayCount < filteredPokemon.length ? (
           <Loader
-            message="Loading more Pokémon..."
-            aria-label="Loading more Pokémon"
+            message="Loading more Pokemon..."
+            aria-label="Loading more Pokemon"
           />
         ) : (
           <Badge
             variant="secondary"
             className="px-4 py-1.5 text-sm"
-            aria-label="All Pokémon loaded">
-            No more Pokémon
+            aria-label="All Pokemon loaded">
+            No more Pokemon
           </Badge>
         )}
       </div>

@@ -21,8 +21,8 @@ PokeTeam Builder & Pokedex is a modern web application designed for Pokemon enth
 - **Stat Analysis**: Visualize and compare Pokemon statistics for strategic planning.
 - **SEO Optimized**: Built with Next.js for fast load times and discoverability.
 - **Authentication Support**: Secure user authentication implemented using Auth.js.
-- **Advanced Filtering**: Filter Pokémon by type, ability, generation, and stats
-- **Team Builder**: Create and manage Pokémon teams with type coverage analysis
+- **Advanced Filtering**: Filter Pokemon by type, ability, generation, and stats
+- **Team Builder**: Create and manage Pokemon teams with type coverage analysis
 - **Responsive Design**: Works on all devices from mobile to desktop
 - **Dark Mode Support**: Toggle between light and dark themes
 - **Performance Optimized**: Uses React Query for data fetching and caching
@@ -52,7 +52,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgements
 
-- [PokeAPI](https://pokeapi.co/) for providing the Pokémon data
+- [PokeAPI](https://pokeapi.co/) for providing the Pokemon data
 - [ShadCN UI](https://ui.shadcn.com/) for the component library
 - [Vercel](https://vercel.com/) for hosting
 - [MultiSelect Component (Shadcn UI)](https://github.com/sersavan/shadcn-multi-select-component/blob/main/src/components/multi-select.tsx)

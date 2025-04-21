@@ -39,7 +39,7 @@
 //         const members = await db
 //           .select({
 //             id: teamMembersTable.pokemonId,
-//             name: teamMembersTable.pokemonId, // In a real app, join with a Pokémon table for name
+//             name: teamMembersTable.pokemonId, // In a real app, join with a Pokemon table for name
 //             slot: teamMembersTable.slot,
 //           })
 //           .from(teamMembersTable)
@@ -164,7 +164,7 @@
 //       throw new Error("Team is full");
 //     }
 //     if (existingMembers.some((m) => m.pokemonId === pokemonId)) {
-//       throw new Error("Pokémon already in team");
+//       throw new Error("Pokemon already in team");
 //     }
 
 //     // Shift slots to make room
@@ -187,7 +187,7 @@
 
 //     revalidatePath("/teams");
 //   } catch (error) {
-//     console.error("Failed to add Pokémon:", error);
+//     console.error("Failed to add Pokemon:", error);
 //     throw error;
 //   }
 // }
@@ -210,7 +210,7 @@
 //         )
 //       );
 
-//     if (!pokemonToRemove) throw new Error("Pokémon not found in team");
+//     if (!pokemonToRemove) throw new Error("Pokemon not found in team");
 
 //     await db
 //       .delete(teamMembersTable)
@@ -233,8 +233,8 @@
 
 //     revalidatePath("/teams");
 //   } catch (error) {
-//     console.error("Failed to remove Pokémon:", error);
-//     throw new Error("Unable to remove Pokémon");
+//     console.error("Failed to remove Pokemon:", error);
+//     throw new Error("Unable to remove Pokemon");
 //   }
 // }
 
@@ -276,7 +276,7 @@
 //       throw new Error("Target team is full");
 //     }
 //     if (toTeamMembers.some((m) => m.pokemonId === pokemonId)) {
-//       throw new Error("Pokémon already in target team");
+//       throw new Error("Pokemon already in target team");
 //     }
 
 //     const [pokemon] = await db
@@ -289,7 +289,7 @@
 //         )
 //       );
 
-//     if (!pokemon) throw new Error("Pokémon not found");
+//     if (!pokemon) throw new Error("Pokemon not found");
 
 //     // Remove from source team
 //     await db
@@ -332,8 +332,8 @@
 
 //     revalidatePath("/teams");
 //   } catch (error) {
-//     console.error("Failed to move Pokémon:", error);
-//     throw new Error("Unable to move Pokémon");
+//     console.error("Failed to move Pokemon:", error);
+//     throw new Error("Unable to move Pokemon");
 //   }
 // }
 

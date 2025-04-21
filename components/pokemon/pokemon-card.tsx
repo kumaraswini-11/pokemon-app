@@ -43,13 +43,13 @@ export const PokemonCard: React.FC<PokemonCardProps> = ({pokemon, pageIndex}) =>
     <Card
       className="relative overflow-hidden rounded-lg shadow-md py-0 gap-0"
       role="article"
-      aria-label={`Pokémon card for ${pokemon.name}`}>
+      aria-label={`Pokemon card for ${pokemon.name}`}>
       <Link
         href={`/pokemon/${pokemon.id}`}
         aria-label={`View ${pokemon.name} details`}>
         <CardHeader className="p-4 pb-0">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-            {/* Pokémon Image */}
+            {/* Pokemon Image */}
             <div className="relative h-32 w-32 self-center sm:self-start">
               <Image
                 src={`${POKEMON_IMAGE_BASE_URL}/${pokemon.id}.png`}

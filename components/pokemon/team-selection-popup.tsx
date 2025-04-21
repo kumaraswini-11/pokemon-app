@@ -49,14 +49,14 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
 
       if (team.members.length >= MAX_MEMBERS_PER_TEAM) {
         toast.error("Team Full", {
-          description: `This team already has ${MAX_MEMBERS_PER_TEAM} Pokémon.`,
+          description: `This team already has ${MAX_MEMBERS_PER_TEAM} Pokemon.`,
         });
         return;
       }
 
       try {
         addPokemonToTeam(teamId, pokemon);
-        toast.success("Pokémon Added!", {
+        toast.success("Pokemon Added!", {
           description: `${pokemon.name} was added to ${team.name}.`,
         });
         onClose();
@@ -147,7 +147,7 @@ export const TeamSelectionPopup: React.FC<TeamSelectionPopupProps> = ({
         <DialogHeader>
           <DialogTitle>Select a Team</DialogTitle>
           <DialogDescription>
-            Create a new team or add to an existing one (max {MAX_MEMBERS_PER_TEAM} Pokémon per
+            Create a new team or add to an existing one (max {MAX_MEMBERS_PER_TEAM} Pokemon per
             team). For more functionality, go to the Team Builder page.
           </DialogDescription>
         </DialogHeader>

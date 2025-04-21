@@ -13,7 +13,7 @@ export async function fetchPokemonList(): Promise<
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch Pokémon list");
+    throw new Error("Failed to fetch Pokemon list");
   }
 
   const data = await response.json();

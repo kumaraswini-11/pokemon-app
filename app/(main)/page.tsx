@@ -8,8 +8,8 @@ import {POKEMON_BASE_URL} from "@/constants";
 import {PokemonListItem} from "@/types/pokemon";
 
 export const metadata: Metadata = {
-  title: "Pokédex - Complete Pokémon Database",
-  description: "Explore all Pokémon across all generations.",
+  title: "Pokedex - Complete Pokemon Database",
+  description: "Explore all Pokemon across all generations.",
 };
 
 interface PokeApiPokemonList {
@@ -47,7 +47,7 @@ async function fetchWithCache<T>(url: string): Promise<T> {
 async function fetchAllPokemonGridDetails(): Promise<PokemonListItem[]> {
   try {
     const listData = await fetchWithCache<PokeApiPokemonList>(
-      `${POKEMON_BASE_URL}/pokemon?limit=2000` // Fetch all Pokémon (~1302 as of 2025)
+      `${POKEMON_BASE_URL}/pokemon?limit=2000` // Fetch all Pokemon (~1302 as of 2025)
     );
 
     const pokemonDetailPromises = listData.results.map(async ({url}) => {
@@ -77,13 +77,13 @@ async function fetchAllPokemonGridDetails(): Promise<PokemonListItem[]> {
     const validPokemon = allPokemonDetails.filter((item): item is PokemonListItem => item !== null);
 
     if (validPokemon.length === 0) {
-      throw new Error("No valid Pokémon data retrieved");
+      throw new Error("No valid Pokemon data retrieved");
     }
 
     return validPokemon;
   } catch (error) {
-    console.error("Error fetching Pokémon list:", error);
-    throw new Error("Failed to fetch Pokémon data");
+    console.error("Error fetching Pokemon list:", error);
+    throw new Error("Failed to fetch Pokemon data");
   }
 }
 
@@ -107,7 +107,7 @@ export default async function PokedexPage() {
           <PokemonFilters />
         </ScrollArea>
 
-        {/* Pokémon grid */}
+        {/* Pokemon grid */}
         <ScrollArea className="w-full">
           <PokemonGrid pokemon={pokemon} />
         </ScrollArea>
