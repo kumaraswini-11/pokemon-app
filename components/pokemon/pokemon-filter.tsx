@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useCallback, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 
 import {RefreshCw} from "lucide-react";
 import {motion} from "motion/react";
@@ -13,22 +13,25 @@ import {Separator} from "@/components/ui/separator";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Slider} from "@/components/ui/slider";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {POKEMON_BASE_STATS, getPokemonTypeBgClass} from "@/constants";
+import {POKEMON_BASE_STATS} from "@/constants";
+import useDebounce from "@/hooks/use-debounce";
 import {
   usePokemonAbilities,
   usePokemonGenerations,
   usePokemonTypes,
 } from "@/hooks/use-pokemon-queries";
 import {cn} from "@/lib/utils";
-import {usePokemonFilterStore} from "@/store/filters";
+import {FilterState, usePokemonFilterStore} from "@/store/filters";
 import {SelectOption} from "@/types/pokemon";
 
 import {ComboboxWithOptionalMultiSelect} from "../shared/combobox-with-optional-multi-select";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "../ui/tabs";
+import {formatAbility} from "./pokemon-card";
 
 export const PokemonFilters: React.FC = () => {
   const {filters, setFilters, resetFilters} = usePokemonFilterStore();
   const [isResetting, setIsResetting] = useState(false);
+  const [pendingFilters, setPendingFilters] = useState<Partial<FilterState> | null>(null);
 
   const {data: types, isLoading: typesLoading, isError: typesError} = usePokemonTypes();
   const {
@@ -42,20 +45,30 @@ export const PokemonFilters: React.FC = () => {
     isError: abilitiesError,
   } = usePokemonAbilities();
 
+  // Apply pending filters with debounce
+  const debouncedPendingFilters = useDebounce(pendingFilters, 200);
+
+  useEffect(() => {
+    if (debouncedPendingFilters) {
+      setFilters(debouncedPendingFilters);
+      setPendingFilters(null);
+    }
+  }, [debouncedPendingFilters, setFilters]);
+
   const updateStatRange = useCallback(
     (stat: string, values: number[]) => {
-      const [min] = values; // Slider provides single value for min (max is fixed at 255)
-      setFilters({
-        stats: filters.stats.map(s => (s.stat === stat ? {...s, min} : s)),
+      const [min] = values;
+      setPendingFilters({
+        stats: filters.stats.map(s => (s.stat === stat ? {...s, min, max: 255} : s)),
       });
     },
-    [filters.stats, setFilters]
+    [filters.stats]
   );
 
   const resetFiltersWithDelay = useCallback(() => {
     setIsResetting(true);
     resetFilters();
-    setTimeout(() => setIsResetting(false), 150);
+    setTimeout(() => setIsResetting(false), 300);
   }, [resetFilters]);
 
   const generationOptions: SelectOption[] =
@@ -73,10 +86,7 @@ export const PokemonFilters: React.FC = () => {
   const abilityOptions: SelectOption[] =
     abilities?.map(ability => ({
       value: ability,
-      label: ability
-        .split("-")
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(" "),
+      label: formatAbility(ability),
     })) || [];
 
   const FilterSkeleton: React.FC = () => <Skeleton className="h-10 w-full" />;
@@ -118,7 +128,6 @@ export const PokemonFilters: React.FC = () => {
               animate={{opacity: 1}}
               className="space-y-4">
               {/* Generation Filter */}
-
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Generation</Label>
                 {generationsLoading ? (
@@ -134,7 +143,7 @@ export const PokemonFilters: React.FC = () => {
                         ? generationOptions.filter(opt => opt.value === filters.generation)
                         : []
                     }
-                    onChange={opts => setFilters({generation: opts[0]?.value || null})}
+                    onChange={opts => setPendingFilters({generation: opts[0]?.value || null})}
                     placeholder="Select generation..."
                     name="generation"
                     disabled={isResetting}
@@ -156,13 +165,13 @@ export const PokemonFilters: React.FC = () => {
                       options={typeOptions}
                       isMultiSelect
                       selectedOptions={typeOptions.filter(opt => filters.types.includes(opt.value))}
-                      onChange={opts => setFilters({types: opts.map(opt => opt.value)})}
+                      onChange={opts => setPendingFilters({types: opts.map(opt => opt.value)})}
                       placeholder="Select types..."
                       name="types"
                       disabled={isResetting}
                       searchPlaceholder="Search types..."
                     />
-                    {filters.types.length > 0 && (
+                    {/* {filters.types.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {filters.types.map(type => (
                           <Badge
@@ -173,7 +182,7 @@ export const PokemonFilters: React.FC = () => {
                           </Badge>
                         ))}
                       </div>
-                    )}
+                    )} */}
                   </>
                 )}
               </div>
@@ -193,27 +202,24 @@ export const PokemonFilters: React.FC = () => {
                       selectedOptions={abilityOptions.filter(opt =>
                         filters.abilities.includes(opt.value)
                       )}
-                      onChange={opts => setFilters({abilities: opts.map(opt => opt.value)})}
+                      onChange={opts => setPendingFilters({abilities: opts.map(opt => opt.value)})}
                       placeholder="Select abilities..."
                       name="abilities"
                       disabled={isResetting}
                       searchPlaceholder="Search abilities..."
                     />
-                    {filters.abilities.length > 0 && (
+                    {/* {filters.abilities.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-1">
                         {filters.abilities.map(ability => (
                           <Badge
                             key={ability}
                             variant="secondary"
                             className="text-xs capitalize">
-                            {ability
-                              .split("-")
-                              .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-                              .join(" ")}
+                            {formatAbility(ability)}
                           </Badge>
                         ))}
                       </div>
-                    )}
+                    )} */}
                   </>
                 )}
               </div>
@@ -242,7 +248,7 @@ export const PokemonFilters: React.FC = () => {
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <div className="flex items-center gap-2 cursor-help">
-                                    <Icon className={cn("h-4 w-4", colorClass)} />
+                                    <Icon className={cn("size-4", colorClass)} />
                                     <span className="text-xs capitalize">{label}</span>
                                   </div>
                                 </TooltipTrigger>

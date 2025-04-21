@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
   },
 
   // If a dependency is using Node.js specific features, you can choose to opt-out specific dependencies from the Server Components bundling and use native Node.js require.
-  serverExternalPackages: ["argon2"],
+  serverExternalPackages: ["bcryptjs"],
 
   eslint: {
     // Warning: This allows production builds to successfully complete even if

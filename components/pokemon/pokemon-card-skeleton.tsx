@@ -1,30 +1,53 @@
-import {Skeleton} from "../ui/skeleton";
+"use client";
 
-export const PokemonCardSkeleton: React.FC = () => (
-  <div className="overflow-hidden rounded-lg border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-    <div className="p-4 text-center">
-      <Skeleton className="mx-auto h-32 w-32 rounded-full" />
-      <div className="mt-4 flex items-center justify-center gap-2">
-        <Skeleton className="h-6 w-36" />
-        <Skeleton className="h-5 w-16" />
-      </div>
-      <div className="mt-2 flex justify-center gap-2">
-        <Skeleton className="h-5 w-16" />
-        <Skeleton className="h-5 w-16" />
-      </div>
-    </div>
-    <div className="p-4 pt-0">
-      <Skeleton className="h-4 w-32" />
-      <div className="mt-4 space-y-3">
-        {Array.from({length: 6}).map((_, i) => (
-          <div
-            key={i}
-            className="space-y-1">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-2 w-full" />
+import React from "react";
+
+import {motion} from "framer-motion";
+
+import {Badge} from "@/components/ui/badge";
+import {Card, CardContent} from "@/components/ui/card";
+import {Skeleton} from "@/components/ui/skeleton";
+
+export const PokemonCardSkeleton: React.FC = () => {
+  return (
+    <motion.div
+      initial={{opacity: 0.5}}
+      animate={{opacity: 1}}
+      transition={{duration: 0.8, repeat: Infinity, repeatType: "reverse", ease: "easeInOut"}}
+      aria-hidden="true">
+      <Card className="h-full rounded-xl shadow-md">
+        <CardContent className="p-4">
+          {/* Image */}
+          <div className="relative mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full">
+            <Skeleton className="h-full w-full" />
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
+
+          {/* Name and ID */}
+          <div className="mb-2 flex items-center justify-between">
+            <Skeleton className="h-6 w-2/3" />
+            <Skeleton className="h-5 w-12" />
+          </div>
+
+          {/* Types */}
+          <div className="mb-4 flex flex-wrap gap-2">
+            <Badge
+              variant="outline"
+              className="px-3 py-1">
+              <Skeleton className="h-4 w-12" />
+            </Badge>
+            <Badge
+              variant="outline"
+              className="px-3 py-1">
+              <Skeleton className="h-4 w-12" />
+            </Badge>
+          </div>
+
+          {/* Team Button */}
+          <div className="flex justify-end">
+            <Skeleton className="h-8 w-8 rounded-full" />
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};

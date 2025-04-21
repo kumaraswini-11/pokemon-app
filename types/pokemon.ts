@@ -98,3 +98,49 @@ export interface SelectOption {
   value: string;
   label: string;
 }
+
+// =========================COMPARE======================================
+
+export interface PokemonListItem {
+  id: number;
+  name: string;
+  generation: string;
+}
+
+export interface PokemonAbility {
+  name: string;
+  hidden: boolean;
+}
+
+export interface PokemonStat {
+  stat: string;
+  base_stat: number;
+}
+
+export interface PokemonMove {
+  name: string;
+  type: string;
+  power: number | null;
+  pp: number | null;
+}
+
+export interface PokemonData {
+  id: number;
+  name: string;
+  types: string[];
+  abilities: PokemonAbility[];
+  stats: PokemonStat[];
+  height: number;
+  weight: number;
+  moves: PokemonMove[];
+}
+
+export interface TypeEffectiveness {
+  double_damage_to: string[];
+  half_damage_to: string[];
+  no_damage_to: string[];
+}
+
+export interface TypeEffectivenessData {
+  [type: string]: TypeEffectiveness;
+}
